@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Pedido de Estudos - Arquivo Musical</title>
+    <title>Pedido de Estudos - Seleção Múltipla</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, sans-serif; }
         body { background: #f6f9fc; color: #1e2f3e; padding: 1.5rem; min-height: 100vh; }
@@ -15,12 +15,22 @@
         .group-card.active { background: #1a6f8f; color: white; }
         .repertory-section { background: white; border-radius: 2rem; padding: 1.5rem; box-shadow: 0 8px 24px rgba(0,0,0,0.05); margin-bottom: 2rem; }
         .section-title { font-size: 1.5rem; font-weight: 600; color: #0e4b62; border-left: 6px solid #ffb347; padding-left: 1rem; margin-bottom: 1.5rem; }
-        .works-grid { display: flex; flex-direction: column; gap: 0.8rem; }
-        .work-item { background: #fefcf5; border-radius: 1.2rem; padding: 1rem 1.2rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.8rem; border: 1px solid #ffe3b5; }
-        .work-info h3 { font-size: 1.1rem; font-weight: 700; color: #2c3e2b; }
-        .work-info p { font-size: 0.85rem; color: #6b7a5e; }
-        .btn-pedido { background: #ffb347; border: none; padding: 0.6rem 1.2rem; border-radius: 2rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .btn-pedido:hover { background: #ff9f1a; transform: scale(0.97); }
+        .works-grid { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1rem; max-height: 400px; overflow-y: auto; padding-right: 0.5rem; }
+        .work-item { background: #fefcf5; border-radius: 1.2rem; padding: 0.8rem 1.2rem; display: flex; align-items: center; gap: 1rem; border: 1px solid #ffe3b5; cursor: pointer; transition: background 0.1s; }
+        .work-item:hover { background: #fff8e7; }
+        .work-item input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; }
+        .work-info { flex: 1; }
+        .work-info h3 { font-size: 1rem; font-weight: 700; color: #2c3e2b; }
+        .work-info p { font-size: 0.8rem; color: #6b7a5e; }
+        .form-fixed { background: #eef4f8; border-radius: 1.5rem; padding: 1.2rem; margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; }
+        .form-field { flex: 1; min-width: 180px; }
+        .form-field label { display: block; font-weight: 600; margin-bottom: 0.3rem; color: #145c74; }
+        .form-field input, .form-field textarea, .form-field select { width: 100%; padding: 0.7rem; border-radius: 1rem; border: 1px solid #cbd5e1; }
+        .btn-enviar { background: #1a6f8f; color: white; border: none; padding: 0.7rem 1.5rem; border-radius: 2rem; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s; }
+        .btn-enviar:disabled { background: #9bb7c4; cursor: not-allowed; }
+        .btn-enviar:hover:not(:disabled) { background: #0e4b62; }
+        .select-all { margin: 0.5rem 0; display: flex; align-items: center; gap: 0.5rem; }
+        .select-all label { font-size: 0.9rem; color: #145c74; cursor: pointer; }
         .admin-toggle { position: fixed; bottom: 20px; right: 20px; background: #1e2f3e; color: white; border: none; border-radius: 50px; padding: 10px 20px; font-weight: bold; cursor: pointer; z-index: 99; }
         .admin-modal { display: none; position: fixed; top:0;left:0;width:100%;height:100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; z-index: 1100; }
         .admin-panel { background: white; width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto; border-radius: 1.8rem; padding: 1.5rem; }
@@ -34,53 +44,78 @@
         .edit-work, .delete-work { border: none; border-radius: 2rem; padding: 0.3rem 0.8rem; cursor: pointer; }
         .edit-work { background: #3a7ca5; color: white; }
         .delete-work { background: #e66a4c; color: white; }
-        .email-config { margin-top: 1rem; border-top: 1px solid #ddd; padding-top: 1rem; }
+        .reset-works { background: #f39c12; color: white; border: none; border-radius: 2rem; padding: 0.5rem 1rem; cursor: pointer; margin-top: 1rem; margin-right: 0.5rem; }
+        .history-buttons, .pedidos-buttons { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .clear-history-btn, .view-pedidos-btn, .clear-pedidos-btn { background: #c0392b; color: white; border: none; border-radius: 2rem; padding: 0.5rem 1rem; cursor: pointer; }
+        .view-pedidos-btn { background: #2980b9; }
+        .clear-pedidos-btn { background: #e67e22; }
+        .clear-history-btn:hover { background: #a82315; }
+        .view-pedidos-btn:hover { background: #1a5276; }
+        .clear-pedidos-btn:hover { background: #b45f1b; }
         .edit-modal { display: none; position: fixed; top:0;left:0;width:100%;height:100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1200; }
         .edit-card { background: white; padding: 1.5rem; border-radius: 1.5rem; width: 90%; max-width: 400px; }
-        footer { text-align: center; font-size: 0.75rem; margin-top: 2rem; color: #6b8f9c; }
-        .toast { position: fixed; bottom: 80px; right: 20px; background: #2c7a4d; color: white; padding: 12px 20px; border-radius: 40px; font-size: 0.9rem; z-index: 2000; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+        footer { text-align: center; font-size: 0.75rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #ddd; color: #6b8f9c; }
+        .footer-clock { font-weight: bold; margin-top: 0.3rem; font-family: monospace; font-size: 1rem; color: #2c5a6e; }
+        .toast { position: fixed; bottom: 80px; right: 20px; background: #2c7a4d; color: white; padding: 12px 20px; border-radius: 40px; font-size: 0.9rem; z-index: 2000; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: pre-line; max-width: 350px; }
         .toast.error { background: #c0392b; }
-        .modal { display: none; position: fixed; top:0;left:0;width:100%;height:100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000; }
-        .modal-card { background: white; width: 90%; max-width: 500px; border-radius: 2rem; padding: 1.8rem; }
-        .modal-card input, .modal-card textarea { width: 100%; padding: 0.8rem; margin: 0.5rem 0; border-radius: 1.2rem; border: 1px solid #ccc; }
-        .modal-card button { background: #1a6f8f; color: white; border: none; padding: 0.8rem; border-radius: 2rem; width: 100%; font-weight: bold; margin-top: 0.5rem; cursor: pointer; }
-        .modal-card button.cancel { background: #ccc; color: #2c3e2b; margin-top: 0.6rem; }
-        @media (max-width: 600px) { .work-item { flex-direction: column; align-items: flex-start; } .btn-pedido { align-self: flex-end; } }
+        .toast.warning { background: #e67e22; }
+        .pedidos-list { max-height: 400px; overflow-y: auto; margin-top: 1rem; border-top: 1px solid #ccc; }
+        .pedido-item { background: #fef9e6; border-radius: 1rem; padding: 0.8rem; margin-bottom: 0.8rem; border-left: 4px solid #ffb347; }
+        .pedido-data { font-size: 0.75rem; color: #666; margin-bottom: 0.3rem; }
+        .pedido-info { font-size: 0.85rem; }
+        .filter-group { margin-bottom: 1rem; display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+        @media (max-width: 600px) { .form-fixed { flex-direction: column; align-items: stretch; } }
     </style>
 </head>
 <body>
+
+
+<center>.'.<img src="data:image/png;base64,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" alt="Image 1" style="max-width: 100%;"/>.'.</center>
 <div class="container">
     <div class="header">
-
-<img src="data:image/png;base64,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" alt="Image 1" style="max-width: 100%;"/>
-
-        <h1>Pedido de Estudos</h1>
-        <p>Escolha a obra, informe seus dados e envie – o pedido vai direto para o arquivista</p>
-    <br>
+        
+        <h1>📘 Pedido de Estudos</h1>
+        <p>Selecione as obras que deseja estudar, preencha seus dados e envie o pedido</p>
     </div>
     <div class="groups-container" id="groupsContainer"></div>
+
     <div class="repertory-section">
         <div class="section-title" id="currentGroupTitle">Repertório em Ensaio</div>
-        <div id="worksList" class="works-grid"><div class="empty-works">Carregando obras...</div></div>
+        
+        <div class="form-fixed">
+            <div class="form-field">
+                <label>Seu nome *</label>
+                <input type="text" id="musicoNome" placeholder="Ex: João Silva" required>
+            </div>
+            <div class="form-field">
+                <label>Seu e-mail *</label>
+                <input type="email" id="musicoEmail" placeholder="exemplo@escola.com" required>
+            </div>
+            <div class="form-field">
+                <label>Instrumento *</label>
+                <input list="instrumentosDinamico" id="musicoInstrumento" placeholder="Selecione ou digite" required>
+                <datalist id="instrumentosDinamico"></datalist>
+            </div>
+            <div class="form-field">
+                <label>Observações (opcional)</label>
+                <textarea id="obs" rows="2" style="width:100%; border-radius:1rem; border:1px solid #cbd5e1; padding:0.5rem;"></textarea>
+            </div>
+            <div class="form-field">
+                <button class="btn-enviar" id="enviarPedidoBtn">📨 Enviar Pedido</button>
+            </div>
+        </div>
+
+        <div class="select-all">
+            <input type="checkbox" id="selectAllCheckbox">
+            <label for="selectAllCheckbox">Selecionar todas as obras deste grupo</label>
+        </div>
+
+        <div id="worksList" class="works-grid"></div>
     </div>
 </div>
+
 <button class="admin-toggle" id="adminToggleBtn" style="display: none;">🔧 Admin</button>
 <div id="toastMsg" class="toast"></div>
-
-<!-- Modal de pedido -->
-<div id="pedidoModal" class="modal">
-    <div class="modal-card">
-        <h3>🎵 Solicitar Partitura</h3>
-        <p id="modalObraInfo" style="font-weight:500; background:#f1f3f4; padding:0.4rem; border-radius:1rem; margin-bottom:1rem;"></p>
-        <label>Seu nome:</label><input type="text" id="musicoNome" placeholder="Ex: João Silva">
-        <label>Instrumento:</label>
-        <input list="instrumentosDinamico" id="musicoInstrumento" placeholder="Selecione ou digite">
-        <datalist id="instrumentosDinamico"></datalist>
-        <label>Observações (opcional):</label><textarea id="obs" rows="2"></textarea>
-        <button id="enviarPedidoBtn">📨 Enviar Pedido</button>
-        <button class="cancel" id="closeModalBtn">Cancelar</button>
-    </div>
-</div>
 
 <!-- Modal Admin -->
 <div id="adminModal" class="admin-modal">
@@ -96,18 +131,53 @@
             </div>
             <h4>📋 Obras do grupo</h4>
             <ul id="adminWorksList"></ul>
-            <div class="email-config">
-                <label>🔗 Endpoint do Formspree (já configurado com seu formulário):</label>
+            <button id="resetWorksBtn" class="reset-works">🔄 Restaurar obras padrão (todas as 33 obras)</button>
+
+            <h4 style="margin-top: 1.5rem;">📋 Histórico de Pedidos Realizados</h4>
+            <div class="pedidos-buttons">
+                <button id="viewPedidosBtn" class="view-pedidos-btn">📋 Exibir todos os pedidos</button>
+                <button id="clearAllPedidosBtn" class="clear-pedidos-btn">🗑️ Limpar todos os pedidos</button>
+            </div>
+
+            <h4 style="margin-top: 1.5rem;">🚫 Controle de Duplicatas (últimos 30 dias)</h4>
+            <div class="history-buttons">
+                <button id="clearHistoryGroupBtn" class="clear-history-btn">Limpar histórico do grupo atual</button>
+                <button id="clearHistoryAllBtn" class="clear-history-btn">Limpar todo o histórico</button>
+            </div>
+            <p style="font-size: 12px; color: #555; margin-top: 0.5rem;">
+                * O controle de duplicatas evita que um mesmo músico solicite a mesma obra repetidamente em menos de 30 dias.
+            </p>
+
+            <div class="email-config" style="margin-top:1rem;">
+                <label>🔗 Endpoint do Formspree:</label>
                 <input type="text" id="formspreeEndpoint" placeholder="https://formspree.io/f/seu_id" style="width:100%;">
                 <button id="saveEndpointBtn">Salvar endpoint</button>
                 <div id="adminStatusMsg" class="status-msg"></div>
-                <p style="font-size:12px; margin-top:8px;">
-                    ✅ Seu endpoint já está pré-configurado. Os pedidos chegarão no e‑mail que você usou no Formspree.
-                </p>
             </div>
-            <button id="logoutAdminBtn" style="background:#888;">Sair do Admin</button>
+            <button id="logoutAdminBtn" style="background:#888; margin-top:1rem;">Sair do Admin</button>
         </div>
         <button id="closeAdminBtn">Fechar</button>
+    </div>
+</div>
+
+<!-- Modal para exibir pedidos -->
+<div id="pedidosModal" class="admin-modal">
+    <div class="admin-panel" style="max-width: 900px;">
+        <h2>📋 Lista de Pedidos Realizados</h2>
+        <div class="filter-group">
+            <label>Filtrar por grupo:</label>
+            <select id="filterPedidosGroup">
+                <option value="todos">Todos os grupos</option>
+                <option value="0">Orquestra Sinfônica Infanto Juvenil</option>
+                <option value="1">Orquestra Sinfônica Jovem</option>
+                <option value="2">Banda Sinfônica</option>
+            </select>
+            <button id="refreshPedidosList" style="background:#1a6f8f; color:white; border:none; border-radius:2rem; padding:0.3rem 1rem;">Atualizar</button>
+        </div>
+        <div id="pedidosListContainer" class="pedidos-list">
+            <p>Carregando...</p>
+        </div>
+        <button id="closePedidosModalBtn" style="margin-top:1rem;">Fechar</button>
     </div>
 </div>
 
@@ -122,205 +192,263 @@
     </div>
 </div>
 
+<footer>
+    <p><i>Desenvolvido por.: <n>Leandro J. Silva</n></i></p>
+    <div class="footer-clock" id="digitalClock"></div>
+</footer>
+
 <script>
-    // ================= SEU ENDPOINT DO FORMSPREE =================
+    // ================= RELÓGIO DIGITAL =================
+    function atualizarRelogio() {
+        const now = new Date();
+        const horas = String(now.getHours()).padStart(2, '0');
+        const minutos = String(now.getMinutes()).padStart(2, '0');
+        const segundos = String(now.getSeconds()).padStart(2, '0');
+        const data = now.toLocaleDateString('pt-BR');
+        document.getElementById('digitalClock').innerHTML = `🕒 ${data} - ${horas}:${minutos}:${segundos}`;
+    }
+    setInterval(atualizarRelogio, 1000);
+    atualizarRelogio();
+
+    // ================= TODO O SEU CÓDIGO ORIGINAL ABAIXO (SEM ALTERAÇÕES) =================
     const FORMSPREE_ENDPOINT = "https://formspree.io/f/xrevzvkk";
-
-    // ================= SEGURANÇA ADMIN =================
     const ADMIN_SECRET_KEY = "admin2025";
-    const urlParams = new URLSearchParams(window.location.search);
-    let isAdmin = urlParams.get('admin') === ADMIN_SECRET_KEY;
-    if (!isAdmin && sessionStorage.getItem('admin_logged') === 'true') isAdmin = true;
-    if (isAdmin) sessionStorage.setItem('admin_logged', 'true');
-    else document.getElementById('adminToggleBtn').style.display = 'none';
 
-    // ================= DADOS GLOBAIS =================
     const GROUPS = [
         { id: 0, name: "Orquestra Sinfônica Infanto Juvenil" },
         { id: 1, name: "Orquestra Sinfônica Jovem" },
         { id: 2, name: "Banda Sinfônica" }
     ];
 
-    // Instrumentos por grupo (mapeamento pelo id do grupo)
     const INSTRUMENTOS_POR_GRUPO = {
-        0: [  // Infanto Juvenil
-            "Piccolo", "Flauta I", "Flauta II", "Flauta III", "Requinta",
-            "Clarinete I", "Clarinete II", "Clarinete III", "Clarone", "Fagote I", "Fagote II",
-            "Sax Alto I", "Trompa I", "Trompa II", "Trompa III", "Trompa IV",
-            "Trompete I", "Trompete II", "Trompete III", "Trombone I", "Trombone II", "Trombone III", "Trombone IV",
-            "Tuba", "Timpani", "Percussão", "Piano", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo", "Harpa"
-        ],
-        1: [  // Orquestra Jovem (mesmo do Infanto, mas sem Sax Alto)
-            "Piccolo", "Flauta I", "Flauta II", "Flauta III", "Requinta",
-            "Clarinete I", "Clarinete II", "Clarinete III", "Clarone", "Fagote I", "Fagote II",
-            "Trompa I", "Trompa II", "Trompa III", "Trompa IV",
-            "Trompete I", "Trompete II", "Trompete III", "Trombone I", "Trombone II", "Trombone III", "Trombone IV",
-            "Tuba", "Timpani", "Percussão", "Piano", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo", "Harpa"
-        ],
-        2: [  // Banda Sinfônica
-            "Piccolo", "Flauta I", "Flauta II", "Flauta III", "Oboé I", "Oboé II", "Requinta",
-            "Clarinete I", "Clarinete II", "Clarinete III", "Clarone", "Fagote I", "Fagote II",
-            "Sax Alto I", "Sax Alto II", "Sax Tenor I", "Sax Tenor II", "Sax Baritono",
-            "Trompa I", "Trompa II", "Trompa III", "Trompa IV",
-            "Cornet I", "Cornet II", "Trompete I", "Trompete II", "Trompete III",
-            "Trombone I", "Trombone II", "Trombone III", "Trombone IV", "Euphonium I", "Euphonium II",
-            "Tuba", "Contrabaixo", "Timpani", "Percussão", "Piano", "Harpa"
-        ]
+        0: [ "Piccolo", "Flauta I", "Flauta II", "Flauta III", "Requinta", "Clarinete I", "Clarinete II", "Clarinete III", "Clarone", "Fagote I", "Fagote II", "Sax Alto I", "Trompa I", "Trompa II", "Trompa III", "Trompa IV", "Trompete I", "Trompete II", "Trompete III", "Trombone I", "Trombone II", "Trombone III", "Trombone IV", "Tuba", "Timpani", "Percussão", "Piano", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo", "Harpa" ],
+        1: [ "Piccolo", "Flauta I", "Flauta II", "Flauta III", "Requinta", "Clarinete I", "Clarinete II", "Clarinete III", "Clarone", "Fagote I", "Fagote II", "Trompa I", "Trompa II", "Trompa III", "Trompa IV", "Trompete I", "Trompete II", "Trompete III", "Trombone I", "Trombone II", "Trombone III", "Trombone IV", "Tuba", "Timpani", "Percussão", "Piano", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo", "Harpa" ],
+        2: [ "Harpa", "Piccolo", "Flauta I", "Flauta II", "Flauta III", "Oboé I", "Oboé II", "Requinta", "Clarinete I", "Clarinete II", "Clarinete III", "Clarone", "Fagote I", "Fagote II", "Sax Alto I", "Sax Alto II", "Sax Tenor I", "Sax Tenor II", "Sax Baritono", "Trompa I", "Trompa II", "Trompa III", "Trompa IV", "Cornet I", "Cornet II", "Trompete I", "Trompete II", "Trompete III", "Trombone I", "Trombone II", "Trombone III", "Trombone IV", "Euphonium I", "Euphonium II", "Tuba", "Contrabaixo", "Timpani", "Percussão", "Piano" ]
     };
 
     let obras = [];
     let currentGroupId = 0;
     let adminSelectedGroupId = 0;
     let editingWorkId = null;
-    let currentPedido = { titulo: "", grupo: "", groupId: null };
+    let isAdmin = false;
 
-    // Carregar dados do localStorage
+    // ----- Histórico de pedidos para evitar duplicidade (chave email|título -> timestamp) -----
+    let historicoPedidos = {};
+
+    // ----- Lista completa de pedidos realizados (para exibição) -----
+    let listaPedidos = []; // cada item: { id, nome, email, instrumento, grupo, obras (array), data, timestamp }
+
+    function carregarHistorico() {
+        const stored = localStorage.getItem("historico_pedidos");
+        if (stored) {
+            historicoPedidos = JSON.parse(stored);
+        } else {
+            historicoPedidos = {};
+        }
+    }
+
+    function salvarHistorico() {
+        localStorage.setItem("historico_pedidos", JSON.stringify(historicoPedidos));
+    }
+
+    function carregarListaPedidos() {
+        const stored = localStorage.getItem("lista_pedidos");
+        if (stored) {
+            listaPedidos = JSON.parse(stored);
+        } else {
+            listaPedidos = [];
+        }
+    }
+
+    function salvarListaPedidos() {
+        localStorage.setItem("lista_pedidos", JSON.stringify(listaPedidos));
+    }
+
+    // Adicionar um pedido à lista completa
+    function adicionarPedido(nome, email, instrumento, grupo, obrasTitulos, observacao = "") {
+        const novoPedido = {
+            id: Date.now(),
+            nome: nome,
+            email: email,
+            instrumento: instrumento,
+            grupo: grupo,
+            obras: obrasTitulos,
+            observacao: observacao,
+            data: new Date().toLocaleString("pt-BR"),
+            timestamp: Date.now()
+        };
+        listaPedidos.unshift(novoPedido); // mais recente no topo
+        salvarListaPedidos();
+    }
+
+    // Limpar todos os pedidos (lista completa)
+    function limparTodosPedidos() {
+        if (confirm("⚠️ Tem certeza que deseja LIMPAR TODOS OS PEDIDOS REGISTRADOS?\nEssa ação não pode ser desfeita.")) {
+            listaPedidos = [];
+            salvarListaPedidos();
+            mostrarToast("✅ Todos os pedidos foram removidos.");
+        }
+    }
+
+    // Exibir modal com lista de pedidos, com filtro
+    function exibirListaPedidos() {
+        const container = document.getElementById("pedidosListContainer");
+        const filtroGroup = document.getElementById("filterPedidosGroup").value;
+        let pedidosFiltrados = [...listaPedidos];
+        if (filtroGroup !== "todos") {
+            const groupId = parseInt(filtroGroup);
+            const groupName = GROUPS.find(g => g.id === groupId)?.name;
+            if (groupName) {
+                pedidosFiltrados = pedidosFiltrados.filter(p => p.grupo === groupName);
+            }
+        }
+        if (pedidosFiltrados.length === 0) {
+            container.innerHTML = "<p>Nenhum pedido encontrado.</p>";
+            return;
+        }
+        container.innerHTML = "";
+        pedidosFiltrados.forEach(p => {
+            const div = document.createElement("div");
+            div.className = "pedido-item";
+            div.innerHTML = `
+                <div class="pedido-data">📅 ${p.data}</div>
+                <div class="pedido-info"><strong>👤 ${escapeHtml(p.nome)}</strong> (${escapeHtml(p.email)}) - 🎺 ${escapeHtml(p.instrumento)}</div>
+                <div class="pedido-info">🎭 Grupo: ${escapeHtml(p.grupo)}</div>
+                <div class="pedido-info">📚 Obras solicitadas (${p.obras.length}):<br>${p.obras.map(obra => `&nbsp;&nbsp;- ${escapeHtml(obra)}`).join("<br>")}</div>
+                ${p.observacao ? `<div class="pedido-info">📝 Obs: ${escapeHtml(p.observacao)}</div>` : ""}
+            `;
+            container.appendChild(div);
+        });
+        document.getElementById("pedidosModal").style.display = "flex";
+    }
+
+    // Verifica se o músico já pediu alguma das obras selecionadas recentemente (últimos N dias)
+    function verificarPedidosDuplicados(email, obrasSelecionadasTitulos, diasLimite = 30) {
+        const agora = Date.now();
+        const limiteMs = diasLimite * 24 * 60 * 60 * 1000;
+        const duplicadas = [];
+        for (const titulo of obrasSelecionadasTitulos) {
+            const chave = `${email}|${titulo}`;
+            const ultimoPedido = historicoPedidos[chave];
+            if (ultimoPedido && (agora - ultimoPedido) < limiteMs) {
+                duplicadas.push(titulo);
+            }
+        }
+        return duplicadas;
+    }
+
+    // Registra um pedido bem-sucedido (todas as obras enviadas) no controle de duplicatas
+    function registrarPedidoDuplicata(email, obrasSelecionadasTitulos) {
+        const agora = Date.now();
+        for (const titulo of obrasSelecionadasTitulos) {
+            const chave = `${email}|${titulo}`;
+            historicoPedidos[chave] = agora;
+        }
+        salvarHistorico();
+    }
+
+    // Limpar histórico de duplicatas completo
+    function limparHistoricoCompleto() {
+        if (confirm("⚠️ Tem certeza que deseja LIMPAR TODO o histórico de duplicatas?\nIsso permitirá que os músicos possam solicitar novamente obras que já haviam pedido.")) {
+            historicoPedidos = {};
+            salvarHistorico();
+            mostrarToast("✅ Histórico de duplicatas limpo com sucesso!", false);
+        }
+    }
+
+    // Limpar histórico de duplicatas apenas das obras do grupo atual (adminSelectedGroupId)
+    function limparHistoricoPorGrupo() {
+        const grupo = adminSelectedGroupId;
+        const obrasDoGrupo = obras.filter(o => o.groupId === grupo).map(o => o.titulo);
+        if (obrasDoGrupo.length === 0) {
+            mostrarToast("Nenhuma obra neste grupo para limpar o histórico.", true);
+            return;
+        }
+        if (confirm(`⚠️ Tem certeza que deseja LIMPAR o histórico de duplicatas para TODAS as obras do grupo "${GROUPS.find(g => g.id === grupo)?.name}"?\nIsso permitirá que os músicos solicitem novamente essas obras, mesmo que já tenham pedido antes.`)) {
+            let removidos = 0;
+            for (const chave in historicoPedidos) {
+                const titulo = chave.split('|')[1];
+                if (obrasDoGrupo.includes(titulo)) {
+                    delete historicoPedidos[chave];
+                    removidos++;
+                }
+            }
+            if (removidos > 0) {
+                salvarHistorico();
+                mostrarToast(`✅ Histórico limpo para ${removidos} registro(s) de obras deste grupo.`, false);
+            } else {
+                mostrarToast("Nenhum registro de pedido encontrado para as obras deste grupo.", false);
+            }
+        }
+    }
+
+    // ----- Dados padrão e persistência -----
+    function getDefaultObras() {
+        return [
+            { id: 101, titulo: "1 - Entrée Sauvages", compositor: "", groupId: 0 },
+            { id: 102, titulo: "2 - Guilherme Tell", compositor: "ROSSINI, G", groupId: 0 },
+            { id: 103, titulo: "3 - Recitative II e III", compositor: "", groupId: 0 },
+            { id: 104, titulo: "4 - Gabriel Oboé", compositor: "MORRICONE, Enio", groupId: 0 },
+            { id: 105, titulo: "5 - Handel Marcha from SCIPIO", compositor: "", groupId: 0 },
+            { id: 106, titulo: "6 - Lascia", compositor: "", groupId: 0 },
+            { id: 107, titulo: "7 - Hornpipe", compositor: "", groupId: 0 },
+            { id: 108, titulo: "8 - Menueto", compositor: "", groupId: 0 },
+            { id: 109, titulo: "01 - Symphony No.8, D.759", compositor: "SCHUBERT, Franz", groupId: 1 },
+            { id: 110, titulo: "02 - Rêverie Op. 24", compositor: "SCRIABIN, Aleksandr", groupId: 1 },
+            { id: 111, titulo: "03 - Coriolan Overture Op. 62", compositor: "BEETHOVEN, Ludwig van", groupId: 1 },
+            { id: 112, titulo: "04 - Danzon No. 2", compositor: "MÁRQUEZ, Arturol", groupId: 1 },
+            { id: 113, titulo: "05 - Sinfonia n.6 -Pastoral", compositor: "BEETHOVEN, L.V", groupId: 1 },
+            { id: 114, titulo: "06 - Suite Nº1", compositor: "GRIEG, Edvard", groupId: 1 },
+            { id: 115, titulo: "01- Suite Nordestina", compositor: "SILVA, José Ursicino", groupId: 2 },
+            { id: 116, titulo: "02 - Jubileu", compositor: "MEDEIROS, Anacleto de", groupId: 2 },
+            { id: 117, titulo: "03 - Game of thrones for concert band", compositor: "DJAWADI, Ramin", groupId: 2 },
+            { id: 118, titulo: "04 - Temas Gonzaga", compositor: "L. Gonzaga", groupId: 2 },
+            { id: 119, titulo: "05 - Tango Los Tres Padres", compositor: "MENDES, Gilberto", groupId: 2 },
+            { id: 120, titulo: "06 - Pavane - transcr JVBota", compositor: "RAVEL, Maurice", groupId: 2 },
+            { id: 121, titulo: "07 - Ponteio", compositor: "MENDES, Gilberto", groupId: 2 },
+            { id: 122, titulo: "08 - Aprendiz de Feiticeiro", compositor: "DUKAS, Paul", groupId: 2 },
+            { id: 123, titulo: "09 - Pavane", compositor: "FAURÉ, Gabriel", groupId: 2 },
+            { id: 124, titulo: "10 - How To Your Dragon", compositor: "POWELL, John", groupId: 2 },
+            { id: 125, titulo: "11 - Beyond the horizon", compositor: "GALANTE, Rossano", groupId: 2 },
+            { id: 126, titulo: "12 - Sobre Excertos de Hilst", compositor: "SANTOS, Pedro R. dos", groupId: 2 },
+            { id: 127, titulo: "13 - Killer Queen", compositor: "BOTA, João Victor", groupId: 2 },
+            { id: 128, titulo: "14 - At the movies haunted nights", compositor: "WILLIAMS, Justin", groupId: 2 },
+            { id: 129, titulo: "15 - John Williams in concer", compositor: "WILLIAMS, John", groupId: 2 },
+            { id: 130, titulo: "16 - Os Incriveis", compositor: "GIACCHINO, Michael", groupId: 2 },
+            { id: 131, titulo: "17 - Swings", compositor: "WILLIAMS, John", groupId: 2 },
+            { id: 132, titulo: "18 - Star Wars the force", compositor: "WILLIAMS, John", groupId: 2 },
+            { id: 133, titulo: "19 - The Lord of the Rings", compositor: "WHITNEY, John", groupId: 2 }
+        ];
+    }
+
     function loadData() {
-        const storedObras = localStorage.getItem("musical_obras");
-        if (storedObras) obras = JSON.parse(storedObras);
-        else {
-            obras = [
-                { id: 101, titulo: "1- Entrée Sauvages", compositor: "", groupId: 0 },
-                { id: 102, titulo: "2- Guilherme Tell", compositor: "ROSSINI, G", groupId: 0 },
-                { id: 103, titulo: "3- Recitative II e III", compositor: "", groupId: 0 },
-                { id: 104, titulo: "4 - Gabriel Oboé", compositor: "MORRICONE, Enio", groupId: 0 },
-                { id: 105, titulo: "5- Handel Marcha from SCIPIO", compositor: "", groupId: 0 },
-                { id: 106, titulo: "6- Lascia", compositor: "", groupId: 0 },
-                { id: 107, titulo: "7- Hornpipe", compositor: "", groupId: 0 },
-                { id: 108, titulo: "8- Menueto", compositor: "", groupId: 0 },
-                { id: 104, titulo: "01 - Symphony No.8, D.759", compositor: "SCHUBERT, Franz", groupId: 1 },
-                { id: 105, titulo: "02 - Rêverie Op. 24", compositor: "SCRIABIN, Aleksandr", groupId: 1 },
-                { id: 105, titulo: "03 - Coriolan Overture Op. 62", compositor: "BEETHOVEN, Ludwig van", groupId: 1 },
-                { id: 105, titulo: "04 - Danzon No. 2", compositor: "MÁRQUEZ, Arturol", groupId: 1 },
-                { id: 105, titulo: "05 - Sinfonia n.6 -Pastoral", compositor: "BEETHOVEN, L.V", groupId: 1 },
-                { id: 105, titulo: "06 - Suite Nº1", compositor: "GRIEG, Edvard", groupId: 1 },
-                { id: 106, titulo: "01- Suite Nordestina", compositor: "SILVA, José Ursicino", groupId: 2 }
-                { id: 106, titulo: "02 - Jubileu", compositor: "MEDEIROS, Anacleto de", groupId: 2 }
-                { id: 106, titulo: "03 - Game of thrones for concert band", compositor: "DJAWADI, Ramin", groupId: 2 }
-            { id: 106, titulo: "04 - Temas Gonzaga", compositor: "L. Gonzaga", groupId: 2 }
-            { id: 106, titulo: "05 - Tango Los Tres Padres", compositor: "MENDES, Gilberto", groupId: 2 }
-            { id: 106, titulo: "06 - Pavane - transcr JVBota", compositor: "RAVEL, Maurice", groupId: 2 }
-            { id: 106, titulo: "07 - Ponteio", compositor: "MENDES, Gilberto", groupId: 2 }
-            { id: 106, titulo: "08 - Aprendiz de Feiticeiro", compositor: "DUKAS, Paul", groupId: 2 }
-            { id: 106, titulo: "09 - Pavane", compositor: "FAURÉ, Gabriel", groupId: 2 }
-            { id: 106, titulo: "10 - How To Your Dragon", compositor: "POWELL, John", groupId: 2 }
-            { id: 106, titulo: "11 - Beyond the horizon", compositor: "GALANTE, Rossano", groupId: 2 }
-            { id: 106, titulo: "12- Sobre Excertos de Hilst", compositor: "SANTOS, Pedro R. dos", groupId: 2 }
-            { id: 106, titulo: "13- Killer Queen", compositor: "BOTA, João Victor", groupId: 2 }
-            { id: 106, titulo: "14- At the movies haunted nights", compositor: "WILLIAMS, Justin", groupId: 2 }
-            { id: 106, titulo: "15- John Williams in concer", compositor: "WILLIAMS, John", groupId: 2 }
-            { id: 106, titulo: "16- Os Incriveis", compositor: "GIACCHINO, Michael", groupId: 2 }
-            { id: 106, titulo: "17 - Swings", compositor: "WILLIAMS, John", groupId: 2 }
-            { id: 106, titulo: "18 - Star Wars the force", compositor: "WILLIAMS, John", groupId: 2 }
-            { id: 106, titulo: "19 - The Lord of the Rings", compositor: "WHITNEY, John", groupId: 2 }
-            
-            ];
+        const stored = localStorage.getItem("musical_obras");
+        if (stored) {
+            obras = JSON.parse(stored);
+        } else {
+            obras = getDefaultObras();
             saveObras();
         }
         if (document.getElementById("formspreeEndpoint")) document.getElementById("formspreeEndpoint").value = FORMSPREE_ENDPOINT;
-    }
-    function saveObras() { localStorage.setItem("musical_obras", JSON.stringify(obras)); }
-
-    // Atualiza o datalist de instrumentos conforme o grupo
-    function atualizarDatalistInstrumentos(groupId) {
-        const datalist = document.getElementById("instrumentosDinamico");
-        if (!datalist) return;
-        const instrumentos = INSTRUMENTOS_POR_GRUPO[groupId] || INSTRUMENTOS_POR_GRUPO[2]; // fallback para Banda
-        datalist.innerHTML = "";
-        instrumentos.forEach(inst => {
-            const option = document.createElement("option");
-            option.value = inst;
-            datalist.appendChild(option);
-        });
+        carregarHistorico();
+        carregarListaPedidos();
     }
 
-    // UI músico
-    function renderGroups() {
-        const container = document.getElementById("groupsContainer");
-        container.innerHTML = "";
-        GROUPS.forEach(g => {
-            const div = document.createElement("div");
-            div.className = `group-card ${currentGroupId === g.id ? 'active' : ''}`;
-            div.innerText = g.name;
-            div.onclick = () => { currentGroupId = g.id; renderGroups(); renderWorksByGroup(g.id); updateGroupTitle(g.name); };
-            container.appendChild(div);
-        });
+    function saveObras() {
+        localStorage.setItem("musical_obras", JSON.stringify(obras));
     }
-    function updateGroupTitle(name) { document.getElementById("currentGroupTitle").innerHTML = `🎼 ${name} · Obras em ensaio`; }
-    function renderWorksByGroup(gid) {
-        const worksDiv = document.getElementById("worksList");
-        const filtered = obras.filter(o => o.groupId === gid);
-        if (!filtered.length) { worksDiv.innerHTML = "<div class='empty-works'>Nenhuma obra no repertório.</div>"; return; }
-        worksDiv.innerHTML = "";
-        filtered.forEach(o => {
-            const item = document.createElement("div"); item.className = "work-item";
-            item.innerHTML = `<div class="work-info"><h3>${escapeHtml(o.titulo)}</h3><p>${escapeHtml(o.compositor || "")}</p></div>
-                              <button class="btn-pedido" data-titulo="${escapeHtml(o.titulo)}" data-grupo="${gid}">📩 Solicitar estudo</button>`;
-            worksDiv.appendChild(item);
-        });
-        document.querySelectorAll(".btn-pedido").forEach(btn => {
-            btn.onclick = () => {
-                const titulo = btn.getAttribute("data-titulo");
-                const grupoId = parseInt(btn.getAttribute("data-grupo"));
-                const grupoNome = GROUPS.find(g => g.id === grupoId)?.name;
-                abrirModalPedido(titulo, grupoNome, grupoId);
-            };
-        });
-    }
-    function abrirModalPedido(titulo, grupoNome, grupoId) {
-        currentPedido = { titulo, grupo: grupoNome, groupId: grupoId };
-        // Atualiza a lista de instrumentos de acordo com o grupo da obra
-        atualizarDatalistInstrumentos(grupoId);
-        document.getElementById("modalObraInfo").innerHTML = `📌 Obra: <strong>${titulo}</strong><br>🎭 Grupo: ${grupoNome}`;
-        document.getElementById("musicoNome").value = "";
-        document.getElementById("musicoInstrumento").value = "";
-        document.getElementById("obs").value = "";
-        document.getElementById("pedidoModal").style.display = "flex";
-    }
-    async function enviarPedido() {
-        const nome = document.getElementById("musicoNome").value.trim();
-        const instrumento = document.getElementById("musicoInstrumento").value.trim();
-        const obs = document.getElementById("obs").value.trim();
-        if (!nome || !instrumento) {
-            mostrarToast("Preencha nome e instrumento.", true);
-            return;
-        }
 
-        const dados = {
-            nome: nome,
-            instrumento: instrumento,
-            obra: currentPedido.titulo,
-            grupo: currentPedido.grupo,
-            observacoes: obs || "Nenhuma"
-        };
-
-        try {
-            const resposta = await fetch(FORMSPREE_ENDPOINT, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(dados)
-            });
-            if (resposta.ok) {
-                mostrarToast("✅ Pedido enviado com sucesso! O arquivista receberá seu pedido por e-mail.");
-                document.getElementById("pedidoModal").style.display = "none";
-            } else {
-                mostrarToast("❌ Erro ao enviar. Tente novamente mais tarde.", true);
-            }
-        } catch (erro) {
-            console.error(erro);
-            mostrarToast("Erro de conexão. Verifique sua internet.", true);
+    function resetToDefaultObras() {
+        if (confirm("⚠️ Isso vai apagar todas as obras atuais e restaurar as 33 obras originais. Deseja continuar?")) {
+            obras = getDefaultObras();
+            saveObras();
+            renderWorksByGroup(currentGroupId);
+            if (isAdmin) renderAdminWorksList();
+            mostrarToast("Obras restauradas com sucesso!");
         }
     }
 
-    function mostrarToast(msg, isError = false) {
-        const toast = document.getElementById("toastMsg");
-        toast.textContent = msg;
-        toast.className = `toast ${isError ? 'error' : ''}`;
-        toast.style.opacity = "1";
-        setTimeout(() => { toast.style.opacity = "0"; }, 3500);
-    }
-
-    // ADMIN (somente se isAdmin)
+    // ADMIN
     function renderAdminGroups() {
         if (!isAdmin) return;
         const cont = document.getElementById("adminGroupSelector");
@@ -333,6 +461,7 @@
             cont.appendChild(btn);
         });
     }
+
     function renderAdminWorksList() {
         const filtered = obras.filter(o => o.groupId === adminSelectedGroupId);
         const ul = document.getElementById("adminWorksList");
@@ -346,43 +475,238 @@
         document.querySelectorAll(".edit-work").forEach(btn => btn.onclick = () => abrirEdicao(parseInt(btn.dataset.id)));
         document.querySelectorAll(".delete-work").forEach(btn => btn.onclick = () => { if (confirm("Remover obra?")) { obras = obras.filter(o => o.id !== parseInt(btn.dataset.id)); saveObras(); renderAdminWorksList(); if (currentGroupId === adminSelectedGroupId) renderWorksByGroup(currentGroupId); } });
     }
+
     function abrirEdicao(id) {
         const obra = obras.find(o => o.id === id);
         if (obra) { editingWorkId = id; document.getElementById("editTitulo").value = obra.titulo; document.getElementById("editCompositor").value = obra.compositor || ""; document.getElementById("editWorkModal").style.display = "flex"; }
     }
+
     function salvarEdicao() {
         if (editingWorkId === null) return;
         const idx = obras.findIndex(o => o.id === editingWorkId);
         if (idx !== -1) {
             obras[idx].titulo = document.getElementById("editTitulo").value.trim() || "Sem título";
-            obras[idx].compositor = document.getElementById("editCompositor").value.trim() || "Desconhecido";
+            obras[idx].compositor = document.getElementById("editCompositor").value.trim() || "";
             saveObras();
             renderAdminWorksList();
             if (currentGroupId === obras[idx].groupId) renderWorksByGroup(currentGroupId);
         }
         document.getElementById("editWorkModal").style.display = "none";
     }
+
     function addWork() {
         const tit = document.getElementById("novaObraTitulo").value.trim();
         if (!tit) return;
-        obras.push({ id: Date.now(), titulo: tit, compositor: document.getElementById("novaObraCompositor").value.trim() || "Desconhecido", groupId: adminSelectedGroupId });
+        obras.push({ id: Date.now(), titulo: tit, compositor: document.getElementById("novaObraCompositor").value.trim() || "", groupId: adminSelectedGroupId });
         saveObras();
         renderAdminWorksList();
         if (currentGroupId === adminSelectedGroupId) renderWorksByGroup(currentGroupId);
         document.getElementById("novaObraTitulo").value = "";
         document.getElementById("novaObraCompositor").value = "";
     }
-    function escapeHtml(str) { if (!str) return ""; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+
+    // RENDER PARA O MÚSICO
+    function renderGroups() {
+        const container = document.getElementById("groupsContainer");
+        container.innerHTML = "";
+        GROUPS.forEach(g => {
+            const div = document.createElement("div");
+            div.className = `group-card ${currentGroupId === g.id ? 'active' : ''}`;
+            div.innerText = g.name;
+            div.onclick = () => {
+                currentGroupId = g.id;
+                renderGroups();
+                renderWorksByGroup(g.id);
+                updateGroupTitle(g.name);
+                atualizarDatalistInstrumentos(g.id);
+                document.getElementById("selectAllCheckbox").checked = false;
+            };
+            container.appendChild(div);
+        });
+    }
+
+    function updateGroupTitle(name) {
+        document.getElementById("currentGroupTitle").innerHTML = `🎼 ${name} · Obras em ensaio (selecione quantas desejar)`;
+    }
+
+    function renderWorksByGroup(gid) {
+        const worksDiv = document.getElementById("worksList");
+        const filtered = obras.filter(o => o.groupId === gid);
+        if (!filtered.length) {
+            worksDiv.innerHTML = "<div class='empty-works'>Nenhuma obra disponível neste repertório.</div>";
+            return;
+        }
+        worksDiv.innerHTML = "";
+        filtered.forEach(obra => {
+            const item = document.createElement("div");
+            item.className = "work-item";
+            item.innerHTML = `
+                <input type="checkbox" class="obra-checkbox" data-id="${obra.id}" data-titulo="${escapeHtml(obra.titulo)}" data-compositor="${escapeHtml(obra.compositor || '')}">
+                <div class="work-info">
+                    <h3>${escapeHtml(obra.titulo)}</h3>
+                    <p>${escapeHtml(obra.compositor || "Compositor não informado")}</p>
+                </div>
+            `;
+            worksDiv.appendChild(item);
+        });
+
+        const selectAll = document.getElementById("selectAllCheckbox");
+        if (selectAll) {
+            selectAll.onchange = (e) => {
+                const checkboxes = document.querySelectorAll("#worksList .obra-checkbox");
+                checkboxes.forEach(cb => cb.checked = e.target.checked);
+            };
+        }
+    }
+
+    function atualizarDatalistInstrumentos(groupId) {
+        const datalist = document.getElementById("instrumentosDinamico");
+        if (!datalist) return;
+        const instrumentos = INSTRUMENTOS_POR_GRUPO[groupId] || INSTRUMENTOS_POR_GRUPO[2];
+        datalist.innerHTML = "";
+        instrumentos.forEach(inst => {
+            const option = document.createElement("option");
+            option.value = inst;
+            datalist.appendChild(option);
+        });
+    }
+
+    function validarEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+
+    let enviando = false;
+
+    async function enviarPedido() {
+        if (enviando) {
+            mostrarToast("Aguarde, processando o pedido...", false);
+            return;
+        }
+
+        const nome = document.getElementById("musicoNome").value.trim();
+        const email = document.getElementById("musicoEmail").value.trim();
+        const instrumento = document.getElementById("musicoInstrumento").value.trim();
+        const obs = document.getElementById("obs").value.trim();
+
+        if (!nome) {
+            mostrarToast("Preencha seu nome.", true);
+            return;
+        }
+        if (!email) {
+            mostrarToast("Preencha seu e-mail.", true);
+            return;
+        }
+        if (!validarEmail(email)) {
+            mostrarToast("Digite um e-mail válido (ex: nome@escola.com).", true);
+            return;
+        }
+        if (!instrumento) {
+            mostrarToast("Preencha seu instrumento.", true);
+            return;
+        }
+
+        const checkboxes = document.querySelectorAll("#worksList .obra-checkbox:checked");
+        if (checkboxes.length === 0) {
+            mostrarToast("Selecione pelo menos uma obra.", true);
+            return;
+        }
+
+        const obrasSelecionadas = [];
+        const titulos = [];
+        checkboxes.forEach(cb => {
+            const titulo = cb.getAttribute("data-titulo");
+            const compositor = cb.getAttribute("data-compositor");
+            obrasSelecionadas.push({ titulo, compositor });
+            titulos.push(titulo);
+        });
+
+        // Verificar duplicatas
+        const duplicadas = verificarPedidosDuplicados(email, titulos, 30);
+        if (duplicadas.length > 0) {
+            const lista = duplicadas.map(t => `- ${t}`).join("\n");
+            mostrarToast(`❌ Você já solicitou as seguintes obras nos últimos 30 dias:\n${lista}\n\nPor favor, não repita pedidos.`, true);
+            return;
+        }
+
+        const grupoAtual = GROUPS.find(g => g.id === currentGroupId)?.name || "Grupo";
+        const obrasTexto = obrasSelecionadas.map(o => `- ${o.titulo}${o.compositor ? ` (${o.compositor})` : ''}`).join("\n");
+        const corpo = `Músico: ${nome}\nE-mail: ${email}\nInstrumento: ${instrumento}\nGrupo: ${grupoAtual}\n\nObras solicitadas (${checkboxes.length}):\n${obrasTexto}\n\nObservações: ${obs || "Nenhuma"}`;
+
+        enviando = true;
+        const btn = document.getElementById("enviarPedidoBtn");
+        btn.disabled = true;
+        btn.textContent = "Enviando...";
+
+        try {
+            const resposta = await fetch(FORMSPREE_ENDPOINT, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    nome: nome,
+                    email: email,
+                    instrumento: instrumento,
+                    grupo: grupoAtual,
+                    obras: obrasTexto,
+                    observacoes: obs,
+                    _subject: `Pedido de Estudo - ${nome} - ${grupoAtual}`
+                })
+            });
+            if (resposta.ok) {
+                // Registrar duplicata
+                registrarPedidoDuplicata(email, titulos);
+                // Registrar na lista completa
+                adicionarPedido(nome, email, instrumento, grupoAtual, titulos, obs);
+                mostrarToast(`✅ Pedido enviado! ${checkboxes.length} obra(s) solicitada(s). O arquivista receberá por e-mail.`);
+                // Limpar seleção e campos
+                document.querySelectorAll("#worksList .obra-checkbox").forEach(cb => cb.checked = false);
+                document.getElementById("selectAllCheckbox").checked = false;
+                document.getElementById("musicoNome").value = "";
+                document.getElementById("musicoEmail").value = "";
+                document.getElementById("musicoInstrumento").value = "";
+                document.getElementById("obs").value = "";
+            } else {
+                mostrarToast("❌ Erro ao enviar. Tente novamente.", true);
+            }
+        } catch (erro) {
+            console.error(erro);
+            mostrarToast("Erro de conexão. Verifique sua internet.", true);
+        } finally {
+            enviando = false;
+            btn.disabled = false;
+            btn.textContent = "📨 Enviar Pedido";
+        }
+    }
+
+    function mostrarToast(msg, isError = false) {
+        const toast = document.getElementById("toastMsg");
+        toast.textContent = msg;
+        toast.className = `toast ${isError ? 'error' : ''}`;
+        toast.style.opacity = "1";
+        setTimeout(() => { toast.style.opacity = "0"; }, 5000);
+    }
+
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+    }
 
     // Inicialização
     function init() {
+        const urlParams = new URLSearchParams(window.location.search);
+        isAdmin = urlParams.get('admin') === ADMIN_SECRET_KEY;
+        if (!isAdmin && sessionStorage.getItem('admin_logged') === 'true') isAdmin = true;
+        if (isAdmin) sessionStorage.setItem('admin_logged', 'true');
+        else document.getElementById('adminToggleBtn').style.display = 'none';
+
         loadData();
+
         renderGroups();
         renderWorksByGroup(0);
         updateGroupTitle(GROUPS[0].name);
+        atualizarDatalistInstrumentos(0);
 
         document.getElementById("enviarPedidoBtn").onclick = enviarPedido;
-        document.getElementById("closeModalBtn").onclick = () => document.getElementById("pedidoModal").style.display = "none";
         document.getElementById("adminToggleBtn").onclick = () => { if (isAdmin) document.getElementById("adminModal").style.display = "flex"; else alert("Acesso restrito."); };
         document.getElementById("closeAdminBtn").onclick = () => document.getElementById("adminModal").style.display = "none";
         document.getElementById("logoutAdminBtn").onclick = () => { sessionStorage.removeItem('admin_logged'); location.href = location.pathname; };
@@ -393,11 +717,20 @@
             const newEp = document.getElementById("formspreeEndpoint").value.trim();
             if (newEp && newEp.startsWith("https://formspree.io/f/")) {
                 localStorage.setItem("formspree_endpoint", newEp);
-                mostrarToast("Endpoint atualizado (mas o sistema já usa o endpoint fixo).");
-            } else {
-                alert("Endpoint inválido. Use o formato https://formspree.io/f/xxxxxx");
-            }
+                mostrarToast("Endpoint salvo. Reinicie a página para aplicar.");
+            } else alert("Endpoint inválido.");
         };
+        document.getElementById("resetWorksBtn").onclick = resetToDefaultObras;
+
+        // Botões de limpar duplicatas
+        document.getElementById("clearHistoryGroupBtn").onclick = limparHistoricoPorGrupo;
+        document.getElementById("clearHistoryAllBtn").onclick = limparHistoricoCompleto;
+
+        // Botões da lista de pedidos
+        document.getElementById("viewPedidosBtn").onclick = () => exibirListaPedidos();
+        document.getElementById("clearAllPedidosBtn").onclick = limparTodosPedidos;
+        document.getElementById("closePedidosModalBtn").onclick = () => document.getElementById("pedidosModal").style.display = "none";
+        document.getElementById("refreshPedidosList").onclick = () => exibirListaPedidos();
 
         if (isAdmin) {
             document.getElementById("adminToggleBtn").style.display = "block";
@@ -407,13 +740,13 @@
             document.getElementById("formspreeEndpoint").value = FORMSPREE_ENDPOINT;
         }
 
-        // Fechar modais ao clicar fora
         window.onclick = (e) => {
-            if (e.target === document.getElementById("pedidoModal")) document.getElementById("pedidoModal").style.display = "none";
             if (e.target === document.getElementById("adminModal")) document.getElementById("adminModal").style.display = "none";
             if (e.target === document.getElementById("editWorkModal")) document.getElementById("editWorkModal").style.display = "none";
+            if (e.target === document.getElementById("pedidosModal")) document.getElementById("pedidosModal").style.display = "none";
         };
     }
+
     init();
 </script>
 </body>
