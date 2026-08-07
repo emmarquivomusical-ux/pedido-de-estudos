@@ -134,7 +134,7 @@
 
         <div class="select-all">
             <input type="checkbox" id="selectAllCheckbox">
-            <label for="selectAllCheckbox">Selecionar todas as obras deste grupo  -  <n>ATENÇÂO!!!  *Retire no dia seguinte*</n></label>
+            <label for="selectAllCheckbox">Selecionar todas as obras deste grupo  -  <n>ATENÇÂO!!!  *Retire no dia seguinte*</n></label>
         </div>
 
         <div id="worksList" class="works-grid"></div>
@@ -226,6 +226,10 @@
 </footer>
 
 <script>
+    // ================= VERSÃO DOS DADOS =================
+    // Incrementar este número sempre que alterar o repertório (getDefaultObras)
+    const VERSAO_OBRAS = "1.0.3";
+
     // ================= RELÓGIO DIGITAL =================
     function atualizarRelogio() {
         const now = new Date();
@@ -415,7 +419,7 @@
             { id: 102, titulo: "02 - Konzert in A-Moll für Violine, Streicher und Basso continuo - Repertório *Jovens Solistas*", compositor: "BACH, J. S", groupId: 0 },
             { id: 103, titulo: "03 - Flute Concerto K. 315 - Repertório *Jovens Solistas*", compositor: "MOZART, W. A ", groupId: 0 },
             { id: 104, titulo: "04 - Clarinet Concerto Nº1 in F minor - Repertório *Jovens Solistas*", compositor: "WEBER, C. M", groupId: 0 },
-            { id: 105, titulo: "05 -+- ", compositor: "", groupId: 0 },
+            { id: 105, titulo: "05 - ", compositor: "", groupId: 0 },
             { id: 106, titulo: "06 - ", compositor: "", groupId: 0 },
             { id: 107, titulo: "07 - ", compositor: "", groupId: 0 },
             { id: 108, titulo: "08 - ", compositor: "", groupId: 0 },
@@ -457,11 +461,15 @@
 
     function loadData() {
         const stored = localStorage.getItem("musical_obras");
-        if (stored) {
+        const versaoAtual = localStorage.getItem("versao_obras");
+        // Se não houver dados ou a versão for diferente, carrega os dados padrão (novo repertório)
+        if (stored && versaoAtual === VERSAO_OBRAS) {
             obras = JSON.parse(stored);
         } else {
+            // Força o carregamento das obras padrão (getDefaultObras) e salva com a nova versão
             obras = getDefaultObras();
             saveObras();
+            localStorage.setItem("versao_obras", VERSAO_OBRAS);
         }
         if (document.getElementById("formspreeEndpoint")) document.getElementById("formspreeEndpoint").value = FORMSPREE_ENDPOINT;
         carregarHistorico();
@@ -470,12 +478,15 @@
 
     function saveObras() {
         localStorage.setItem("musical_obras", JSON.stringify(obras));
+        // Atualiza a versão também ao salvar (caso tenha sido alterada manualmente)
+        localStorage.setItem("versao_obras", VERSAO_OBRAS);
     }
 
     function resetToDefaultObras() {
         if (confirm("⚠️ Isso vai apagar todas as obras atuais e restaurar as 33 obras originais. Deseja continuar?")) {
             obras = getDefaultObras();
             saveObras();
+            localStorage.setItem("versao_obras", VERSAO_OBRAS);
             renderWorksByGroup(currentGroupId);
             if (isAdmin) renderAdminWorksList();
             mostrarToast("Obras restauradas com sucesso!");
