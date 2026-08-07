@@ -216,7 +216,7 @@
     const ADMIN_SECRET_KEY = "admin2025";
 
     const GROUPS = [
-        { id: 0, name: "Orquestra Sinfônica Infanto Juvenil" },
+        { id: 0, name: "Orquestra Sinfônica Infanto Juvenil (Jovens Solistas)" },
         { id: 1, name: "Orquestra Sinfônica Jovem" },
         { id: 2, name: "Banda Sinfônica" }
     ];
@@ -405,7 +405,7 @@
             { id: 114, titulo: "06 - ", compositor: "", groupId: 1 },
             { id: 115, titulo: "07 - ", compositor: "", groupId: 1 },
 // ================= Banda Sinfonica =====================================
-            { id: 116, titulo: "01-  Dança de Vagharshabad", compositor: "VARTABED, Komitas", groupId: 2 },
+            { id: 116, titulo: "01 -  Dança de Vagharshabad", compositor: "VARTABED, Komitas", groupId: 2 },
             { id: 117, titulo: "02 - Sobre Excertos de Hilda Hilst", compositor: "SANTOS, Pedro R. dos", groupId: 2 },
             { id: 118, titulo: "03 - Os Xapiri", compositor: "SANTOS, Gilson", groupId: 2 },
             { id: 119, titulo: "04 - Suite Pernambucana de Bolso", compositor: "Mestre Duda", groupId: 2 },
@@ -537,7 +537,7 @@
     }
 
     function updateGroupTitle(name) {
-        document.getElementById("currentGroupTitle").innerHTML = `🎼 ${name} · Obras em ensaio (selecione quantas desejar)`;
+        document.getElementById("currentGroupTitle").innerHTML = `🎼 ${name} · (selecione apenas a que desejar conforme o repertório)`;
     }
 
     function renderWorksByGroup(gid) {
