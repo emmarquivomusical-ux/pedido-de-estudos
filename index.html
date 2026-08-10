@@ -568,50 +568,39 @@
     }
 
     function renderWorksByGroup(gid) {
-        const worksDiv = document.getElementById("worksList");
-        const filtered = obras.filter(o => o.groupId === gid);
-        if (!filtered.length) {
-            worksDiv.innerHTML = "<div class='empty-works'>Nenhuma obra disponível neste repertório.</div>";
-            return;
-        }
-        worksDiv.innerHTML = "";
-        filtered.forEach(obra => {
-            const item = document.createElement("div");
-            item.className = "work-item";
-            const hasAudio = obra.audioUrl && obra.audioUrl.trim() !== "";
-            item.innerHTML = `
-                <input type="checkbox" class="obra-checkbox" data-id="${obra.id}" data-titulo="${escapeHtml(obra.titulo)}" data-compositor="${escapeHtml(obra.compositor || '')}">
-                <div class="work-info">
-                    <h3>${escapeHtml(obra.titulo)}</h3>
-                    <p>${escapeHtml(obra.compositor || "Compositor não informado")}</p>
-                </div>
-                <div class="work-audio">
-                    ${hasAudio ? `<audio controls preload="none" style="max-width:120px; height:28px;"><source src="${escapeHtml(obra.audioUrl)}" type="audio/mpeg">Seu navegador não suporta áudio.</audio>` : `<span style="font-size:0.7rem;color:#999;">Sem áudio</span>`}
-                </div>
-                <button class="btn-pedido" data-id="${obra.id}" data-titulo="${escapeHtml(obra.titulo)}" data-grupo="${gid}">📩 Solicitar estudo</button>
-            `;
-            worksDiv.appendChild(item);
-        });
-
-        // Evento do botão "Solicitar estudo"
-        document.querySelectorAll(".btn-pedido").forEach(btn => {
-            btn.onclick = (e) => {
-                const titulo = btn.getAttribute("data-titulo");
-                const grupoId = parseInt(btn.getAttribute("data-grupo"));
-                const grupoNome = GROUPS.find(g => g.id === grupoId)?.name;
-                abrirModalPedido(titulo, grupoNome);
-            };
-        });
-
-        // Evento do "Selecionar todos"
-        const selectAll = document.getElementById("selectAllCheckbox");
-        if (selectAll) {
-            selectAll.onchange = (e) => {
-                const checkboxes = document.querySelectorAll("#worksList .obra-checkbox");
-                checkboxes.forEach(cb => cb.checked = e.target.checked);
-            };
-        }
+    const worksDiv = document.getElementById("worksList");
+    const filtered = obras.filter(o => o.groupId === gid);
+    if (!filtered.length) {
+        worksDiv.innerHTML = "<div class='empty-works'>Nenhuma obra disponível neste repertório.</div>";
+        return;
     }
+    worksDiv.innerHTML = "";
+    filtered.forEach(obra => {
+        const item = document.createElement("div");
+        item.className = "work-item";
+        const hasAudio = obra.audioUrl && obra.audioUrl.trim() !== "";
+        item.innerHTML = `
+            <input type="checkbox" class="obra-checkbox" data-id="${obra.id}" data-titulo="${escapeHtml(obra.titulo)}" data-compositor="${escapeHtml(obra.compositor || '')}">
+            <div class="work-info">
+                <h3>${escapeHtml(obra.titulo)}</h3>
+                <p>${escapeHtml(obra.compositor || "Compositor não informado")}</p>
+            </div>
+            <div class="work-audio">
+                ${hasAudio ? `<audio controls preload="none" style="max-width:120px; height:28px;"><source src="${escapeHtml(obra.audioUrl)}" type="audio/mpeg">Seu navegador não suporta áudio.</audio>` : `<span style="font-size:0.7rem;color:#999;">Sem áudio</span>`}
+            </div>
+        `;
+        worksDiv.appendChild(item);
+    });
+
+    // Evento do "Selecionar todos"
+    const selectAll = document.getElementById("selectAllCheckbox");
+    if (selectAll) {
+        selectAll.onchange = (e) => {
+            const checkboxes = document.querySelectorAll("#worksList .obra-checkbox");
+            checkboxes.forEach(cb => cb.checked = e.target.checked);
+        };
+    }
+}
 
     function atualizarDatalistInstrumentos(groupId) {
         const datalist = document.getElementById("instrumentosDinamico");
