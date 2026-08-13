@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+    <!-- ===== FORÇA LIMPEZA DE CACHE ===== -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    <!-- ================================== -->
 
     <title>Pedido de Estudos - Seleção Múltipla</title>
     <style>
@@ -42,8 +44,6 @@
         .work-info p { font-size: 0.8rem; color: #6b7a5e; }
         .work-audio { flex-shrink: 0; display: flex; align-items: center; gap: 0.3rem; }
         .work-audio audio { max-width: 150px; height: 30px; }
-        .btn-pedido { background: #ffb347; border: none; padding: 0.4rem 1rem; border-radius: 2rem; font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: 0.2s; flex-shrink: 0; }
-        .btn-pedido:hover { background: #ff9f1a; transform: scale(0.97); }
         .form-fixed { background: #eef4f8; border-radius: 1.5rem; padding: 1.2rem; margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; }
         .form-field { flex: 1; min-width: 180px; }
         .form-field label { display: block; font-weight: 600; margin-bottom: 0.3rem; color: #145c74; }
@@ -87,6 +87,7 @@
         .pedido-info { font-size: 0.85rem; }
         .filter-group { margin-bottom: 1rem; display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
         select[multiple] { height: 100px; width: 100%; border-radius: 1rem; padding: 0.5rem; border: 1px solid #cbd5e1; }
+        .empty-works { text-align: center; padding: 2rem; color: #999; font-style: italic; }
         @media (max-width: 600px) {
             .form-fixed { flex-direction: column; align-items: stretch; }
             .work-item { flex-direction: column; align-items: stretch; }
@@ -239,8 +240,8 @@
 
 <script>
     // ================= VERSÃO DO APP =================
-    const VERSAO_APP = "1.0.9";
-    const VERSAO_OBRAS = "1.0.9";
+    const VERSAO_APP = "1.1.0";
+    const VERSAO_OBRAS = "1.1.0";
 
     // ================= RELÓGIO =================
     function atualizarRelogio() {
@@ -559,6 +560,9 @@
                 atualizarDatalistInstrumentos(g.id);
                 document.getElementById("selectAllCheckbox").checked = false;
                 document.getElementById("musicoInstrumento").value = "";
+                // Limpar mensagem de "nenhuma obra"
+                const emptyMsg = document.querySelector(".empty-works");
+                if (emptyMsg) emptyMsg.remove();
                 mostrarTodasObras();
             };
             container.appendChild(div);
@@ -571,11 +575,17 @@
 
     function mostrarTodasObras() {
         document.querySelectorAll("#worksList .work-item").forEach(item => item.style.display = "flex");
+        const emptyMsg = document.querySelector(".empty-works");
+        if (emptyMsg) emptyMsg.remove();
     }
 
     function renderWorksByGroup(gid) {
         const worksDiv = document.getElementById("worksList");
         const filtered = obras.filter(o => o.groupId === gid);
+        // Remove mensagem "nenhuma obra" antiga
+        const emptyMsg = worksDiv.querySelector(".empty-works");
+        if (emptyMsg) emptyMsg.remove();
+
         if (!filtered.length) {
             worksDiv.innerHTML = "<div class='empty-works'>Nenhuma obra disponível neste repertório.</div>";
             return;
@@ -613,11 +623,19 @@
 
     function aplicarFiltroInstrumento(instrumento) {
         const items = document.querySelectorAll("#worksList .work-item");
+        // Remove qualquer mensagem "nenhuma obra" existente
+        const worksDiv = document.getElementById("worksList");
+        let emptyMsg = worksDiv.querySelector(".empty-works");
+        if (emptyMsg) emptyMsg.remove();
+
         if (!instrumento) {
             items.forEach(item => item.style.display = "flex");
             return;
         }
+
         const instLower = instrumento.toLowerCase();
+        let encontrou = false;
+
         items.forEach(item => {
             const checkbox = item.querySelector(".obra-checkbox");
             const obraId = parseInt(checkbox.dataset.id);
@@ -625,7 +643,15 @@
             if (!obra) return;
             const temInstrumento = obra.instrumentos.some(inst => inst.toLowerCase().includes(instLower));
             item.style.display = temInstrumento ? "flex" : "none";
+            if (temInstrumento) encontrou = true;
         });
+
+        if (!encontrou && items.length > 0) {
+            const msg = document.createElement("div");
+            msg.className = "empty-works";
+            msg.textContent = `🎵 Nenhuma obra disponível para o instrumento "${instrumento}" neste grupo.`;
+            worksDiv.appendChild(msg);
+        }
     }
 
     function atualizarDatalistInstrumentos(groupId) {
