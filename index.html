@@ -236,9 +236,11 @@
 </footer>
 
 <script>
-    // ================= VERSÃO DOS DADOS =================
-    // Incrementar este número sempre que alterar o repertório (getDefaultObras)
-    const VERSAO_OBRAS = "1.0.5";  // ← ATUALIZADO
+    // ================= VERSÃO DO APP (força recarga do HTML) =================
+    const VERSAO_APP = "1.0.6"; // Incrementar a cada alteração no código HTML
+
+    // ================= VERSÃO DOS DADOS (controla o localStorage) =================
+    const VERSAO_OBRAS = "1.0.6";
 
     // ================= RELÓGIO DIGITAL =================
     function atualizarRelogio() {
@@ -569,39 +571,39 @@
     }
 
     function renderWorksByGroup(gid) {
-    const worksDiv = document.getElementById("worksList");
-    const filtered = obras.filter(o => o.groupId === gid);
-    if (!filtered.length) {
-        worksDiv.innerHTML = "<div class='empty-works'>Nenhuma obra disponível neste repertório.</div>";
-        return;
-    }
-    worksDiv.innerHTML = "";
-    filtered.forEach(obra => {
-        const item = document.createElement("div");
-        item.className = "work-item";
-        const hasAudio = obra.audioUrl && obra.audioUrl.trim() !== "";
-        item.innerHTML = `
-            <input type="checkbox" class="obra-checkbox" data-id="${obra.id}" data-titulo="${escapeHtml(obra.titulo)}" data-compositor="${escapeHtml(obra.compositor || '')}">
-            <div class="work-info">
-                <h3>${escapeHtml(obra.titulo)}</h3>
-                <p>${escapeHtml(obra.compositor || "Compositor não informado")}</p>
-            </div>
-            <div class="work-audio">
-                ${hasAudio ? `<audio controls preload="none" style="max-width:120px; height:28px;"><source src="${escapeHtml(obra.audioUrl)}" type="audio/mpeg">Seu navegador não suporta áudio.</audio>` : `<span style="font-size:0.7rem;color:#999;">Sem áudio</span>`}
-            </div>
-        `;
-        worksDiv.appendChild(item);
-    });
+        const worksDiv = document.getElementById("worksList");
+        const filtered = obras.filter(o => o.groupId === gid);
+        if (!filtered.length) {
+            worksDiv.innerHTML = "<div class='empty-works'>Nenhuma obra disponível neste repertório.</div>";
+            return;
+        }
+        worksDiv.innerHTML = "";
+        filtered.forEach(obra => {
+            const item = document.createElement("div");
+            item.className = "work-item";
+            const hasAudio = obra.audioUrl && obra.audioUrl.trim() !== "";
+            item.innerHTML = `
+                <input type="checkbox" class="obra-checkbox" data-id="${obra.id}" data-titulo="${escapeHtml(obra.titulo)}" data-compositor="${escapeHtml(obra.compositor || '')}">
+                <div class="work-info">
+                    <h3>${escapeHtml(obra.titulo)}</h3>
+                    <p>${escapeHtml(obra.compositor || "Compositor não informado")}</p>
+                </div>
+                <div class="work-audio">
+                    ${hasAudio ? `<audio controls preload="none" style="max-width:120px; height:28px;"><source src="${escapeHtml(obra.audioUrl)}" type="audio/mpeg">Seu navegador não suporta áudio.</audio>` : `<span style="font-size:0.7rem;color:#999;">Sem áudio</span>`}
+                </div>
+            `;
+            worksDiv.appendChild(item);
+        });
 
-    // Evento do "Selecionar todos"
-    const selectAll = document.getElementById("selectAllCheckbox");
-    if (selectAll) {
-        selectAll.onchange = (e) => {
-            const checkboxes = document.querySelectorAll("#worksList .obra-checkbox");
-            checkboxes.forEach(cb => cb.checked = e.target.checked);
-        };
+        // Evento do "Selecionar todos"
+        const selectAll = document.getElementById("selectAllCheckbox");
+        if (selectAll) {
+            selectAll.onchange = (e) => {
+                const checkboxes = document.querySelectorAll("#worksList .obra-checkbox");
+                checkboxes.forEach(cb => cb.checked = e.target.checked);
+            };
+        }
     }
-}
 
     function atualizarDatalistInstrumentos(groupId) {
         const datalist = document.getElementById("instrumentosDinamico");
@@ -732,8 +734,27 @@
         return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
     }
 
-    // Inicialização
+    // ============================================================
+    //  INICIALIZAÇÃO – com verificação de versão do APP
+    // ============================================================
     function init() {
+        // Verifica se a versão do APP mudou. Se mudou, limpa o cache e recarrega.
+        const versaoAppSalva = localStorage.getItem("versao_app");
+        if (versaoAppSalva !== VERSAO_APP) {
+            // Nova versão detectada: limpa o cache do navegador e recarrega
+            localStorage.setItem("versao_app", VERSAO_APP);
+            // Limpa o cache do service worker (se houver) – mas o principal é forçar recarga
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    for (let name of names) caches.delete(name);
+                });
+            }
+            // Recarrega a página com um parâmetro para forçar o navegador a baixar novamente
+            window.location.reload(true);
+            return;
+        }
+
+        // Resto da inicialização normal
         const urlParams = new URLSearchParams(window.location.search);
         isAdmin = urlParams.get('admin') === ADMIN_SECRET_KEY;
         if (!isAdmin && sessionStorage.getItem('admin_logged') === 'true') isAdmin = true;
