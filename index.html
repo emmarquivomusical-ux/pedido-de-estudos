@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-    <!-- ===== FORÇA LIMPEZA DE CACHE ===== -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <!-- ================================== -->
 
     <title>Pedido de Estudos - Seleção Múltipla</title>
     <style>
@@ -17,19 +15,7 @@
         .container { max-width: 1300px; margin: 0 auto; }
         .header { text-align: center; margin-bottom: 2rem; }
         .header h1 { font-size: 1.8rem; background: linear-gradient(135deg, #0b3b5f, #1b6b8f); background-clip: text; -webkit-background-clip: text; color: transparent; }
-        .header .top-clock {
-            font-family: monospace;
-            font-size: 1.2rem;
-            color: #2c5a6e;
-            background: #eef4f8;
-            display: inline-block;
-            padding: 0.3rem 1.2rem;
-            border-radius: 30px;
-            margin-top: 0.5rem;
-            font-weight: 600;
-            letter-spacing: 1px;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-        }
+        .header .top-clock { font-family: monospace; font-size: 1.2rem; color: #2c5a6e; background: #eef4f8; display: inline-block; padding: 0.3rem 1.2rem; border-radius: 30px; margin-top: 0.5rem; font-weight: 600; letter-spacing: 1px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); }
         .groups-container { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-bottom: 2rem; }
         .group-card { background: white; border-radius: 1.5rem; padding: 1rem 1.8rem; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #e2edf2; text-align: center; font-weight: 600; color: #145c74; }
         .group-card.active { background: #1a6f8f; color: white; }
@@ -240,8 +226,8 @@
 
 <script>
     // ================= VERSÃO DO APP =================
-    const VERSAO_APP = "1.1.0";
-    const VERSAO_OBRAS = "1.1.0";
+    const VERSAO_APP = "1.1.1";
+    const VERSAO_OBRAS = "1.1.1";
 
     // ================= RELÓGIO =================
     function atualizarRelogio() {
@@ -454,7 +440,6 @@
             btn.onclick = () => { adminSelectedGroupId = g.id; renderAdminGroups(); renderAdminWorksList(); };
             cont.appendChild(btn);
         });
-        // Atualizar select de instrumentos da nova obra
         const selectNovo = document.getElementById("novaObraInstrumentos");
         if (selectNovo) {
             const instrumentos = INSTRUMENTOS_POR_GRUPO[adminSelectedGroupId] || [];
@@ -560,7 +545,6 @@
                 atualizarDatalistInstrumentos(g.id);
                 document.getElementById("selectAllCheckbox").checked = false;
                 document.getElementById("musicoInstrumento").value = "";
-                // Limpar mensagem de "nenhuma obra"
                 const emptyMsg = document.querySelector(".empty-works");
                 if (emptyMsg) emptyMsg.remove();
                 mostrarTodasObras();
@@ -582,7 +566,6 @@
     function renderWorksByGroup(gid) {
         const worksDiv = document.getElementById("worksList");
         const filtered = obras.filter(o => o.groupId === gid);
-        // Remove mensagem "nenhuma obra" antiga
         const emptyMsg = worksDiv.querySelector(".empty-works");
         if (emptyMsg) emptyMsg.remove();
 
@@ -621,9 +604,9 @@
         }
     }
 
+    // ===== FILTRO CORRIGIDO (considera "Todos") =====
     function aplicarFiltroInstrumento(instrumento) {
         const items = document.querySelectorAll("#worksList .work-item");
-        // Remove qualquer mensagem "nenhuma obra" existente
         const worksDiv = document.getElementById("worksList");
         let emptyMsg = worksDiv.querySelector(".empty-works");
         if (emptyMsg) emptyMsg.remove();
@@ -641,7 +624,9 @@
             const obraId = parseInt(checkbox.dataset.id);
             const obra = obras.find(o => o.id === obraId);
             if (!obra) return;
-            const temInstrumento = obra.instrumentos.some(inst => inst.toLowerCase().includes(instLower));
+            // Verifica se a obra tem "Todos" OU se algum instrumento corresponde
+            const temInstrumento = obra.instrumentos.some(inst => inst.toLowerCase() === "todos") ||
+                                  obra.instrumentos.some(inst => inst.toLowerCase().includes(instLower));
             item.style.display = temInstrumento ? "flex" : "none";
             if (temInstrumento) encontrou = true;
         });
@@ -702,7 +687,9 @@
             const obraId = parseInt(cb.dataset.id);
             const obra = obras.find(o => o.id === obraId);
             if (!obra) continue;
-            const compativel = obra.instrumentos.some(inst => inst.toLowerCase().includes(instrumentoLower));
+            // Verifica se a obra tem "Todos" OU se o instrumento corresponde
+            const compativel = obra.instrumentos.some(inst => inst.toLowerCase() === "todos") ||
+                              obra.instrumentos.some(inst => inst.toLowerCase().includes(instrumentoLower));
             if (!compativel) {
                 mostrarToast(`❌ O instrumento "${instrumento}" não está disponível para a obra "${obra.titulo}".`, true);
                 return;
