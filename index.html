@@ -29,8 +29,9 @@
         .work-info h3 { font-size: 1rem; font-weight: 700; color: #2c3e2b; }
         .work-info p { font-size: 0.8rem; color: #6b7a5e; }
         .work-audio { flex-shrink: 0; display: flex; align-items: center; gap: 0.3rem; max-width: 200px; }
-        .work-audio iframe { max-width: 180px; border-radius: 8px; height: 80px; }
+        .work-audio iframe { max-width: 180px; border-radius: 8px; height: 80px; border: none; }
         .work-audio audio { max-width: 150px; height: 30px; }
+        .work-audio .audio-link { font-size: 0.7rem; color: #1a6f8f; text-decoration: underline; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
         .form-fixed { background: #eef4f8; border-radius: 1.5rem; padding: 1.2rem; margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; }
         .form-field { flex: 1; min-width: 180px; }
         .form-field label { display: block; font-weight: 600; margin-bottom: 0.3rem; color: #145c74; }
@@ -152,7 +153,7 @@
                 <h4>➕ Adicionar obra</h4>
                 <input type="text" id="novaObraTitulo" placeholder="Título da obra">
                 <input type="text" id="novaObraCompositor" placeholder="Compositor">
-                <input type="text" id="novaObraAudio" placeholder="URL do áudio (MP3 ou Spotify)">
+                <input type="text" id="novaObraAudio" placeholder="URL do áudio (MP3, Spotify, YouTube, SoundCloud)">
                 <label>Instrumentos que tocam nesta obra:</label>
                 <select id="novaObraInstrumentos" multiple></select>
                 <button id="addWorkBtn">Adicionar</button>
@@ -215,7 +216,7 @@
         <h3>✏️ Editar obra</h3>
         <label>Título:</label><input type="text" id="editTitulo">
         <label>Compositor:</label><input type="text" id="editCompositor">
-        <label>URL do Áudio (MP3 ou Spotify):</label><input type="text" id="editAudio" placeholder="https://...">
+        <label>URL do Áudio (MP3, Spotify, YouTube, SoundCloud):</label><input type="text" id="editAudio" placeholder="https://...">
         <label>Instrumentos que tocam nesta obra:</label>
         <select id="editInstrumentos" multiple></select>
         <button id="confirmEditBtn">Salvar</button>
@@ -231,20 +232,45 @@
 
 <script>
     // ================= VERSÃO DO APP =================
-    const VERSAO_APP = "1.2.3";
-    const VERSAO_OBRAS = "1.2.3";
+    const VERSAO_APP = "1.2.2";
+    const VERSAO_OBRAS = "1.2.2";
 
-    // ================= FUNÇÃO PARA CONVERTER LINK DO SPOTIFY =================
-    function converterLinkSpotify(url) {
-        if (!url) return null;
-        if (url.includes('/embed/')) return url;
-        const match = url.match(/open\.spotify\.com\/(track|playlist|album|episode|show)\/([a-zA-Z0-9]+)/);
-        if (match) {
-            const tipo = match[1];
-            const id = match[2];
-            return `https://open.spotify.com/embed/${tipo}/${id}`;
+    // ================= FUNÇÃO PARA CONVERTER LINKS DE ÁUDIO =================
+    function obterEmbedAudio(url) {
+        if (!url) return { tipo: 'nenhum', url: '' };
+
+        // Spotify
+        const spotifyMatch = url.match(/open\.spotify\.com\/(track|playlist|album|episode|show)\/([a-zA-Z0-9]+)/);
+        if (spotifyMatch) {
+            const tipo = spotifyMatch[1];
+            const id = spotifyMatch[2];
+            return { tipo: 'spotify', url: `https://open.spotify.com/embed/${tipo}/${id}` };
         }
-        return null;
+
+        // YouTube (comum: watch?v=... ou youtu.be/...)
+        const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+        if (youtubeMatch) {
+            const id = youtubeMatch[1];
+            return { tipo: 'youtube', url: `https://www.youtube.com/embed/${id}` };
+        }
+
+        // SoundCloud (qualquer link do soundcloud.com)
+        if (url.includes('soundcloud.com')) {
+            // SoundCloud não tem um embed direto fácil sem API, mas podemos usar o embed genérico
+            // O embed do SoundCloud requer um link de compartilhamento, mas a maioria dos links funciona
+            // Vamos tentar usar o embed padrão: https://w.soundcloud.com/player/?url=...
+            return { tipo: 'soundcloud', url: `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&auto_play=false&visual=true` };
+        }
+
+        // Verifica se é um link direto de MP3 (termina com .mp3 ou contém .mp3?)
+        if (url.match(/\.mp3($|\?)/i)) {
+            return { tipo: 'mp3', url: url };
+        }
+
+        // Se não for nenhum dos acima, tenta como MP3 (pode ser um link direto)
+        // Tentar detectar se é um link de áudio (mime type, etc.) não é possível aqui.
+        // Vamos assumir que pode ser MP3, mas se falhar, mostra um link.
+        return { tipo: 'desconhecido', url: url };
     }
 
     // ================= RELÓGIO =================
@@ -398,7 +424,7 @@
     // ----- Dados padrão (COM INSTRUMENTOS) -----
     function getDefaultObras() {
         return [
-            // ================= Orquestra Sinfônica Infanto Juvenil =================
+             // ================= Orquestra Sinfônica Infanto Juvenil =================
             { id: 101, titulo: "01 - Material Didático (aquecimento)", compositor: "MCALLISTER, John", instrumentos: ["Todos"], audioUrl: "", groupId: 0 },
             { id: 102, titulo: "02 - Konzert in A-Moll ...", compositor: "BACH, J. S", instrumentos: ["Violino", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://open.spotify.com/playlist/3rV7BGkHFJklO9Syp5ndvJ?si=KvJwPO6ZRH--R4k98rr5VQ", groupId: 0 },
             { id: 103, titulo: "03 - Flute Concerto K. 315", compositor: "MOZART, W. A", instrumentos: ["Flauta", "Oboé I", "Oboé II", "Horn I", "Horn II", "Corn I", "Corn II", "Trompete I", "Trompete II", "Violino I", "Violino II", "Viola", "Violoncello", "Contrabaixo"], audioUrl: "https://open.spotify.com/intl-pt/track/318CgDuC9XCmBxTozSa4bs?si=a1b2bc978ce5436c", groupId: 0 },
@@ -418,6 +444,7 @@
             { id: 119, titulo: "04 - Suite Pernambucana de Bolso", compositor: "Mestre Duda", instrumentos: ["Todos"], audioUrl: "https://open.spotify.com/intl-pt/track/6y5bt2BJifsPZl4Ym5jNcW?si=cc886e67abdc4834", groupId: 2 }
         ];
     }
+
 
     function loadData() {
         const stored = localStorage.getItem("musical_obras");
@@ -571,7 +598,6 @@
             };
             container.appendChild(div);
         });
-        console.log("✅ Grupos renderizados:", GROUPS.length); // depuração
     }
 
     function updateGroupTitle(name) {
@@ -602,11 +628,25 @@
             let audioHtml = '';
             const hasAudio = obra.audioUrl && obra.audioUrl.trim() !== '';
             if (hasAudio) {
-                const spotifyEmbed = converterLinkSpotify(obra.audioUrl);
-                if (spotifyEmbed) {
-                    audioHtml = `<iframe src="${escapeHtml(spotifyEmbed)}" width="100%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media" style="max-width:180px; border-radius:8px;"></iframe>`;
-                } else {
-                    audioHtml = `<audio controls preload="none" style="max-width:150px; height:30px;"><source src="${escapeHtml(obra.audioUrl)}" type="audio/mpeg">Seu navegador não suporta áudio.</audio>`;
+                const info = obterEmbedAudio(obra.audioUrl);
+                switch(info.tipo) {
+                    case 'spotify':
+                        audioHtml = `<iframe src="${escapeHtml(info.url)}" width="100%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media" style="max-width:180px; border-radius:8px;"></iframe>`;
+                        break;
+                    case 'youtube':
+                        audioHtml = `<iframe src="${escapeHtml(info.url)}" width="100%" height="80" frameborder="0" allowfullscreen style="max-width:180px; border-radius:8px;"></iframe>`;
+                        break;
+                    case 'soundcloud':
+                        audioHtml = `<iframe src="${escapeHtml(info.url)}" width="100%" height="80" frameborder="0" allow="autoplay; encrypted-media" style="max-width:180px; border-radius:8px;"></iframe>`;
+                        break;
+                    case 'mp3':
+                        audioHtml = `<audio controls preload="none" style="max-width:150px; height:30px;"><source src="${escapeHtml(info.url)}" type="audio/mpeg">Seu navegador não suporta áudio.</audio>`;
+                        break;
+                    case 'desconhecido':
+                    default:
+                        // Mostra um link para abrir em nova aba
+                        audioHtml = `<a href="${escapeHtml(obra.audioUrl)}" target="_blank" class="audio-link" title="Abrir áudio em nova aba">🔗 Ouvir</a>`;
+                        break;
                 }
             } else {
                 audioHtml = `<span style="font-size:0.7rem;color:#999;">Sem áudio</span>`;
@@ -800,8 +840,6 @@
     //  INICIALIZAÇÃO
     // ============================================================
     function init() {
-        console.log("🚀 Iniciando aplicação...");
-
         const versaoAppSalva = localStorage.getItem("versao_app");
         if (versaoAppSalva !== VERSAO_APP) {
             localStorage.setItem("versao_app", VERSAO_APP);
@@ -867,8 +905,6 @@
             if (e.target === document.getElementById("editWorkModal")) document.getElementById("editWorkModal").style.display = "none";
             if (e.target === document.getElementById("pedidosModal")) document.getElementById("pedidosModal").style.display = "none";
         };
-
-        console.log("✅ Aplicação inicializada.");
     }
 
     init();
