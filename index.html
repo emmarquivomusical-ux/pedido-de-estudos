@@ -28,7 +28,8 @@
         .work-info { flex: 1; min-width: 120px; }
         .work-info h3 { font-size: 1rem; font-weight: 700; color: #2c3e2b; }
         .work-info p { font-size: 0.8rem; color: #6b7a5e; }
-        .work-audio { flex-shrink: 0; display: flex; align-items: center; gap: 0.3rem; }
+        .work-audio { flex-shrink: 0; display: flex; align-items: center; gap: 0.3rem; max-width: 200px; }
+        .work-audio iframe { max-width: 180px; border-radius: 8px; height: 80px; }
         .work-audio audio { max-width: 150px; height: 30px; }
         .form-fixed { background: #eef4f8; border-radius: 1.5rem; padding: 1.2rem; margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; }
         .form-field { flex: 1; min-width: 180px; }
@@ -77,7 +78,8 @@
         @media (max-width: 600px) {
             .form-fixed { flex-direction: column; align-items: stretch; }
             .work-item { flex-direction: column; align-items: stretch; }
-            .work-audio { justify-content: flex-start; }
+            .work-audio { justify-content: flex-start; max-width: 100%; }
+            .work-audio iframe { max-width: 100%; }
             .work-audio audio { max-width: 100%; }
         }
     </style>
@@ -149,7 +151,7 @@
                 <h4>➕ Adicionar obra</h4>
                 <input type="text" id="novaObraTitulo" placeholder="Título da obra">
                 <input type="text" id="novaObraCompositor" placeholder="Compositor">
-                <input type="text" id="novaObraAudio" placeholder="URL do áudio (MP3)">
+                <input type="text" id="novaObraAudio" placeholder="URL do áudio (MP3 ou Spotify)">
                 <label>Instrumentos que tocam nesta obra:</label>
                 <select id="novaObraInstrumentos" multiple></select>
                 <button id="addWorkBtn">Adicionar</button>
@@ -212,7 +214,7 @@
         <h3>✏️ Editar obra</h3>
         <label>Título:</label><input type="text" id="editTitulo">
         <label>Compositor:</label><input type="text" id="editCompositor">
-        <label>URL do Áudio (MP3):</label><input type="text" id="editAudio" placeholder="https://...">
+        <label>URL do Áudio (MP3 ou Spotify):</label><input type="text" id="editAudio" placeholder="https://...">
         <label>Instrumentos que tocam nesta obra:</label>
         <select id="editInstrumentos" multiple></select>
         <button id="confirmEditBtn">Salvar</button>
@@ -228,8 +230,23 @@
 
 <script>
     // ================= VERSÃO DO APP =================
-    const VERSAO_APP = "1.1.9";
-    const VERSAO_OBRAS = "1.1.9";
+    const VERSAO_APP = "1.2.0";  // <-- incrementei para refletir a mudança
+    const VERSAO_OBRAS = "1.2.0";
+
+    // ================= FUNÇÃO PARA CONVERTER LINK DO SPOTIFY =================
+    function converterLinkSpotify(url) {
+        if (!url) return null;
+        // Se já for um link embed, retorna o próprio
+        if (url.includes('/embed/')) return url;
+        // Converte link normal para embed
+        const match = url.match(/open\.spotify\.com\/(track|playlist|album|episode|show)\/([a-zA-Z0-9]+)/);
+        if (match) {
+            const tipo = match[1];
+            const id = match[2];
+            return `https://open.spotify.com/embed/${tipo}/${id}`;
+        }
+        return null;
+    }
 
     // ================= RELÓGIO =================
     function atualizarRelogio() {
@@ -384,7 +401,9 @@
         return [
             // ================= Orquestra Sinfônica Infanto Juvenil =================
             { id: 101, titulo: "01 - Material Didático (aquecimento)", compositor: "MCALLISTER, John", instrumentos: ["Todos"], audioUrl: "", groupId: 0 },
-            { id: 102, titulo: "02 - Konzert in A-Moll ...", compositor: "BACH, J. S", instrumentos: ["Violino", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "", groupId: 0 },
+            { id: 102, titulo: "02 - Konzert in A-Moll ...", compositor: "BACH, J. S", instrumentos: ["Violino", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://open.spotify.com/playlist/3rV7BGkHFJklO9Syp5ndvJ?si=KvJwPO6ZRH--R4k98rr5VQ
+
+", groupId: 0 },
             { id: 103, titulo: "03 - Flute Concerto K. 315", compositor: "MOZART, W. A", instrumentos: ["Flauta", "Oboé I", "Oboé II", "Horn I", "Horn II", "Corn I", "Corn II", "Trompete I", "Trompete II", "Violino I", "Violino II", "Viola", "Violoncello", "Contrabaixo"], audioUrl: "", groupId: 0 },
             { id: 104, titulo: "04 - Clarinet Concerto Nº1 in F minor", compositor: "WEBER, C. M", instrumentos: ["Flauta I", "Flauta II", "Oboé I", "Oboé II", "Fagote I", "Fagote II", "Horn I", "Horn II", "Trompete I", "Trompete II", "Timpani", "Violino I", "Violino II", "Viola", "Violoncello", "Contrabaixo"], audioUrl: "", groupId: 0 },
             { id: 105, titulo: "05 - Romance in G Op. 40", compositor: "BEETHOVEN, L.V", instrumentos: ["Flauta I", "Oboé I", "Oboé II", "Fagote I", "Fagote II", "Horn I", "Horn II", "Violino I", "Violino II", "Viola", "Violoncello", "Contrabaixo"], audioUrl: "", groupId: 0 },
@@ -567,6 +586,7 @@
         if (emptyMsg) emptyMsg.remove();
     }
 
+    // ================= RENDERIZAÇÃO DAS OBRAS (COM SPOTIFY) =================
     function renderWorksByGroup(gid) {
         const worksDiv = document.getElementById("worksList");
         const filtered = obras.filter(o => o.groupId === gid);
@@ -581,7 +601,23 @@
         filtered.forEach(obra => {
             const item = document.createElement("div");
             item.className = "work-item";
-            const hasAudio = obra.audioUrl && obra.audioUrl.trim() !== "";
+            
+            // --- Lógica do áudio com suporte a Spotify ---
+            let audioHtml = '';
+            const hasAudio = obra.audioUrl && obra.audioUrl.trim() !== '';
+            if (hasAudio) {
+                const spotifyEmbed = converterLinkSpotify(obra.audioUrl);
+                if (spotifyEmbed) {
+                    // É um link do Spotify - usa iframe
+                    audioHtml = `<iframe src="${escapeHtml(spotifyEmbed)}" width="100%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media" style="max-width:180px; border-radius:8px;"></iframe>`;
+                } else {
+                    // Link de MP3 - usa audio tag
+                    audioHtml = `<audio controls preload="none" style="max-width:150px; height:30px;"><source src="${escapeHtml(obra.audioUrl)}" type="audio/mpeg">Seu navegador não suporta áudio.</audio>`;
+                }
+            } else {
+                audioHtml = `<span style="font-size:0.7rem;color:#999;">Sem áudio</span>`;
+            }
+
             item.innerHTML = `
                 <input type="checkbox" class="obra-checkbox" data-id="${obra.id}" data-titulo="${escapeHtml(obra.titulo)}" data-compositor="${escapeHtml(obra.compositor || '')}">
                 <div class="work-info">
@@ -589,7 +625,7 @@
                     <p>${escapeHtml(obra.compositor || "Compositor não informado")}</p>
                 </div>
                 <div class="work-audio">
-                    ${hasAudio ? `<audio controls preload="none" style="max-width:120px; height:28px;"><source src="${escapeHtml(obra.audioUrl)}" type="audio/mpeg">Seu navegador não suporta áudio.</audio>` : `<span style="font-size:0.7rem;color:#999;">Sem áudio</span>`}
+                    ${audioHtml}
                 </div>
             `;
             worksDiv.appendChild(item);
