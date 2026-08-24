@@ -671,14 +671,7 @@
         const instrumentoAtual = document.getElementById("musicoInstrumento").value.trim().toLowerCase();
         if (instrumentoAtual) {
             aplicarFiltroInstrumento(instrumentoAtual);
-        }
-
-        const selectAll = document.getElementById("selectAllCheckbox");
-        if (selectAll) {
-            selectAll.onchange = (e) => {
-                document.querySelectorAll("#worksList .obra-checkbox").forEach(cb => cb.checked = e.target.checked);
-            };
-        }
+        }       
     }
 
     // ===== FILTRO CORRIGIDO (considera "Todos") =====
