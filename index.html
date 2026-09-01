@@ -8,7 +8,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
-    <title>Pedido de Estudos - Seleção Múltipla</title>
+    <title>Pedido de Estudos</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, sans-serif; }
         body { background: #f6f9fc; color: #1e2f3e; padding: 1.5rem; min-height: 100vh; }
@@ -78,6 +78,7 @@
         .empty-works { text-align: center; padding: 2rem; color: #999; font-style: italic; }
         
        // ================= NOVO CÓDIGO: CLASSE PARA PISCAR =================
+         /* NOVO CÓDIGO: CLASSE PARA PISCAR */
         .alerta-piscante {
             color: red;
             font-weight: bold;
@@ -156,7 +157,6 @@
 <button class="admin-toggle" id="adminToggleBtn" style="display: none;">🔧 Admin</button>
 <div id="toastMsg" class="toast"></div>
 
-    // ================= Modal Admin =================
 <!-- Modal Admin -->
 <div id="adminModal" class="admin-modal">
     <div class="admin-panel">
@@ -203,7 +203,7 @@
     </div>
 </div>
 
-// ================= Modal para exibir pedidos =================
+<!-- Modal para exibir pedidos -->
 <div id="pedidosModal" class="admin-modal">
     <div class="admin-panel" style="max-width: 900px;">
         <h2>📋 Lista de Pedidos Realizados</h2>
@@ -224,7 +224,6 @@
     </div>
 </div>
 
-    //================= Modal edição =================
 <!-- Modal edição -->
 <div id="editWorkModal" class="edit-modal">
     <div class="edit-card">
@@ -432,7 +431,7 @@
         }
     }
 
-              // ================= Dados padrão (COM INSTRUMENTOS) =================
+    // ----- Dados padrão (COM INSTRUMENTOS) -----
     function getDefaultObras() {
         return [
              // ================= Orquestra Sinfônica Infanto Juvenil =================
@@ -694,7 +693,7 @@
         }       
     }
 
-    // ================= FILTRO CORRIGIDO (considera "Todos") =================
+    // ===== FILTRO CORRIGIDO (considera "Todos") =====
     function aplicarFiltroInstrumento(instrumento) {
         const items = document.querySelectorAll("#worksList .work-item");
         const worksDiv = document.getElementById("worksList");
