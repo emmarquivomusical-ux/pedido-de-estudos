@@ -122,20 +122,20 @@
 
         <div class="form-fixed">
             <div class="form-field">
-                <label>Seu nome *</label>
+                <label>Seu nome *👇</label>
                 <input type="text" id="musicoNome" placeholder="Ex: João Silva" required>
             </div>
             <div class="form-field">
-                <label>Seu e-mail *</label>
+                <label>Seu e-mail *👇</label>
                 <input type="email" id="musicoEmail" placeholder="exemplo@escola.com" required>
             </div>
             <div class="form-field">
-                <label>Instrumento *</label>
+                <label>Instrumento *👇</label>
                 <input list="instrumentosDinamico" id="musicoInstrumento" placeholder="Digite seu instrumento" required>
                 <datalist id="instrumentosDinamico"></datalist>
             </div>
             <div class="form-field">
-                <label>Observações (opcional)</label>
+                <label>Observações (opcional) 👇</label>
                 <textarea id="obs" rows="2" style="width:100%; border-radius:1rem; border:1px solid #cbd5e1; padding:0.5rem;"></textarea>
             </div>
             <div class="form-field">
@@ -289,9 +289,9 @@
         const segundos = String(now.getSeconds()).padStart(2, '0');
         const data = now.toLocaleDateString('pt-BR');
         const horaFormatada = `${horas}:${minutos}:${segundos}`;
-        document.getElementById('digitalClock').innerHTML = `🕒 ${data} - ${horaFormatada}`;
+        document.getElementById('digitalClock').innerHTML = `🕒 ${data} - ${horaFormatada}🕒`;
         const topClock = document.getElementById('topClock');
-        if (topClock) topClock.innerHTML = `🕒 ${data} - ${horaFormatada}`;
+        if (topClock) topClock.innerHTML = `🕒 ${data} - ${horaFormatada}🕒`;
     }
     setInterval(atualizarRelogio, 1000);
     atualizarRelogio();
