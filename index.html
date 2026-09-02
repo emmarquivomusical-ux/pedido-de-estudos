@@ -8,7 +8,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
-    <title>Pedido de Estudos - Seleção Múltipla</title>
+    <title>Pedido de Estudos</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, sans-serif; }
         body { background: #f6f9fc; color: #1e2f3e; padding: 1.5rem; min-height: 100vh; }
@@ -108,7 +108,7 @@
         </center>
         <br>
         <div id="topClock" class="top-clock"></div>
-        <h1>📖 Pedido de Estudos 📖</h1>
+        <h1>📖📝 Pedido de Estudos 📝📖</h1>
         <br>
         <p><h3>✅ Selecione apenas as obras que deseja estudar, preencha seus dados e envie o pedido</p>
         <p class="alerta-piscante">⚠️ ATENÇÂO!!! Após o pedido, retirar o material no dia seguinte.</p>
@@ -245,8 +245,8 @@
 
 <script>
     // ================= VERSÃO DO APP ==========================================================
-    const VERSAO_APP = "1.4.7";
-    const VERSAO_OBRAS = "1.4.7";
+    const VERSAO_APP = "1.4.8";
+    const VERSAO_OBRAS = "1.4.8";
 
     // ================= FUNÇÃO PARA CONVERTER LINKS DE ÁUDIO =================
     function obterEmbedAudio(url) {
@@ -623,7 +623,7 @@
     }
 
     function updateGroupTitle(name) {
-        document.getElementById("currentGroupTitle").innerHTML = `🎼 ${name} · Obras do repertório (selecione apenas a obra desejada)`;
+        document.getElementById("currentGroupTitle").innerHTML = `🎼 ${name} · Obras do repertório`;
     }
 
     function mostrarTodasObras() {
