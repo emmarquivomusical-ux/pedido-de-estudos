@@ -155,7 +155,7 @@
 
         <br>
         <div id="topClock" class="top-clock"></div>
-        <h1>📖📝 Pedido de Estudos 📝📖</h1>
+        <h1>Pedido de Estudos</h1>
 <!-- ★★★ ANIMAÇÃO ADICIONADA AQUI (NO PONTO INDICADO) ★★★ -->
         <center>
     <img src="https://cdn.dribbble.com/userupload/21000909/file/original-6b06bf8614ee6d2c799d7df00f6ad2a6.gif" alt="Animação" style="max-width: 100px; margin-bottom: 1rem; border-radius: 12px;">
@@ -347,7 +347,7 @@
         const segundos = String(now.getSeconds()).padStart(2, '0');
         const data = now.toLocaleDateString('pt-BR');
         const horaFormatada = `${horas}:${minutos}:${segundos}`;
-        document.getElementById('digitalClock').innerHTML = `🕒 ${data} - ${horaFormatada}🕒`;
+        document.getElementById('digitalClock').innerHTML = `${data} - 🕒${horaFormatada}🕒`;
         const topClock = document.getElementById('topClock');
         if (topClock) topClock.innerHTML = `🕒 ${data} - ${horaFormatada}🕒`;
     }
