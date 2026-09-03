@@ -347,9 +347,9 @@
         const segundos = String(now.getSeconds()).padStart(2, '0');
         const data = now.toLocaleDateString('pt-BR');
         const horaFormatada = `${horas}:${minutos}:${segundos}`;
-        document.getElementById('digitalClock').innerHTML = `${data} - 🕒${horaFormatada}🕒`;
+        document.getElementById('digitalClock').innerHTML = `🕒${data} - ${horaFormatada}🕒`;
         const topClock = document.getElementById('topClock');
-        if (topClock) topClock.innerHTML = `🕒 ${data} - ${horaFormatada}🕒`;
+        if (topClock) topClock.innerHTML = `${data}  🕒${horaFormatada}🕒`;
     }
     setInterval(atualizarRelogio, 1000);
     atualizarRelogio();
