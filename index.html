@@ -136,6 +136,36 @@
             .pulse { width: 70px; height: 70px; font-size: 1.8rem; }
         }
 
+        /* ★★★ NOVO CÓDIGO: SELETOR DE REPERTÓRIO ★★★ */
+        .repertoire-selector-wrapper {
+            background: #fef7e0;
+            padding: 1rem;
+            border-radius: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid #ffe3b5;
+            flex-wrap: wrap;
+        }
+        .repertoire-selector-wrapper label {
+            font-weight: bold;
+            color: #145c74;
+            font-size: 1rem;
+        }
+        .repertoire-selector-wrapper select {
+            padding: 0.6rem 1rem;
+            border-radius: 1rem;
+            border: 1px solid #cbd5e1;
+            font-weight: bold;
+            color: #145c74;
+            background: white;
+            cursor: pointer;
+            font-size: 1rem;
+            flex: 1;
+            min-width: 200px;
+        }
+
         @media (max-width: 600px) {
             .form-fixed { flex-direction: column; align-items: stretch; }
             .work-item { flex-direction: column; align-items: stretch; }
@@ -177,6 +207,16 @@
 
     <div class="repertory-section">
         <div class="section-title" id="currentGroupTitle">Repertório em Ensaio</div>
+
+        <!-- ★★★ NOVO: SELETOR DE REPERTÓRIO (Aparece apenas na Orquestra Jovem) ★★★ -->
+        <div id="repertoireSelectorWrapper" class="repertoire-selector-wrapper" style="display: none;">
+            <label for="repertoireSelect">📚 Selecione o Repertório:</label>
+            <select id="repertoireSelect">
+                <option value="solistas">Repertório Jovens Solistas</option>
+                <option value="segundo_semestre">Repertório Segundo Semestre</option>
+            </select>
+        </div>
+        <!-- ★★★ FIM DO SELETOR ★★★ -->
 
         <div class="form-fixed">
             <div class="form-field">
@@ -227,6 +267,15 @@
                 <input type="text" id="novaObraAudio" placeholder="URL do áudio (MP3, Spotify, YouTube, SoundCloud)">
                 <label>Instrumentos que tocam nesta obra:</label>
                 <select id="novaObraInstrumentos" multiple></select>
+                <!-- ★★★ NOVO: SELETOR DE REPERTÓRIO NO ADMIN ★★★ -->
+                <div id="adminRepertorioWrapper" style="display:none; margin-top: 0.5rem;">
+                    <label>Repertório (apenas Orquestra Jovem):</label>
+                    <select id="novaObraRepertorio">
+                        <option value="solistas">Jovens Solistas</option>
+                        <option value="segundo_semestre">Segundo Semestre</option>
+                    </select>
+                </div>
+                <!-- ★★★ FIM DO SELETOR ★★★ -->
                 <button id="addWorkBtn">Adicionar</button>
             </div>
             <h4>📋 Obras do grupo</h4>
@@ -290,6 +339,15 @@
         <label>URL do Áudio (MP3, Spotify, YouTube, SoundCloud):</label><input type="text" id="editAudio" placeholder="https://...">
         <label>Instrumentos que tocam nesta obra:</label>
         <select id="editInstrumentos" multiple></select>
+        <!-- ★★★ NOVO: SELETOR DE REPERTÓRIO NA EDIÇÃO ★★★ -->
+        <div id="editRepertorioWrapper" style="display:none; margin-top: 0.5rem;">
+            <label>Repertório (apenas Orquestra Jovem):</label>
+            <select id="editRepertorio">
+                <option value="solistas">Jovens Solistas</option>
+                <option value="segundo_semestre">Segundo Semestre</option>
+            </select>
+        </div>
+        <!-- ★★★ FIM DO SELETOR ★★★ -->
         <button id="confirmEditBtn">Salvar</button>
         <button id="cancelEditBtn">Cancelar</button>
     </div>
@@ -303,8 +361,8 @@
 
 <script>
     // ================= VERSÃO DO APP ==========================================================
-    const VERSAO_APP = "1.5.6";
-    const VERSAO_OBRAS = "1.5.6";
+    const VERSAO_APP = "1.5.7";
+    const VERSAO_OBRAS = "1.5.7";
 
     // ================= FUNÇÃO PARA CONVERTER LINKS DE ÁUDIO =================
     function obterEmbedAudio(url) {
@@ -376,6 +434,7 @@
     let adminSelectedGroupId = 0;
     let editingWorkId = null;
     let isAdmin = false;
+    let currentRepertoire = 'solistas'; // ★★★ NOVO: Controla o repertório da Orquestra Jovem ★★★
 
     // Histórico de pedidos
     let historicoPedidos = {};
@@ -501,15 +560,23 @@
             { id: 107, titulo: "07 - Oboé Concerto in F Major Op. 7 Nº9 ...", compositor: "ALBINONI, Tomaso", instrumentos: ["Oboé - SOLO", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/FA0Vy8dAaio?si=CPQPOLnUEuD9Fx9j", groupId: 0 },
             { id: 108, titulo: "08 - Danças Húngaras Nº 1", compositor: "BRAHMS, Johannes", instrumentos: ["Flauta I", "Flauta II", "Piccolo", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Fagote I", "Fagote II", "Horn I", "Horn II", "Horn III", "Horn IV", "Trompete I", "Trompete II", "Timpani", "Percussão", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/gyNA6Awa8ec?si=hImU7-2awvghAT85", groupId: 0 },
             
-            // ================= Orquestra Sinfonica Jovem ===========================
-            { id: 109, titulo: "01 - Sinfonia n.6 - Pastoral", compositor: "BEETHOVEN, L.V", instrumentos: ["Flauta I", "Flauta II", "Piccolo", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Fagote I", "Fagote II", "Horn I", "Horn II", "Trompete I", "Trompete II", "Trombone I", "Trombone II", "Timpani", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://open.spotify.com/playlist/5skobdx1jrICiHdzKzI12w?si=ohFdZH6cQjCz41JYTTM3sQ", groupId: 1 },
-            { id: 110, titulo: "02 - Concertino pour flûte, Op.107 - JOVENS SOLISTAS", compositor: "CHAMINADE, Cecile - Solista - Gabriel Pedro Waldowski Medeiros", instrumentos: ["Flauta I", "Piccolo", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Fagote I", "Fagote II", "Horn I", "Horn II", "Trompa III", "Trompa IV", "Trombone I", "Trombone II", "Trombone III", "Tuba", "Timpani", "Harpa", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/wJhV1kp3l2Y?si=b48yZLZH5Lxl66JT", groupId: 1 },
-            { id: 111, titulo: "03 - Cello Concerto, Op. 85 - JOVENS SOLISTAS", compositor: "ELGAR, Edward - Solista - Túlio Nakamoto Schimdt", instrumentos: ["Flauta I", "Flauta II", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Fagote I", "Fagote II", "Horn I", "Horn II", "Horn III", "Horn IV", "Trombone I", "Trombone II", "Trombone III", "Tuba", "Timpani", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/hTlWUOllZsA?si=nr7TcqbCyHaGJsCt", groupId: 1 },
-            { id: 112, titulo: "04 - Morceau de Concert pour Corn - JOVENS SOLISTAS", compositor: "SAINT-SAENS, Camille - Solista - Samuel Henrique Sartori Nunes", instrumentos: ["Flauta I", "Flauta II", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Fagote I", "Fagote II", "Trombone I", "Trombone II", "Trombone III", "Timpani", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/KhANlrqirK8?si=v9ZWN_oAe798w0GW", groupId: 1 },
-            { id: 113, titulo: "05 - Clarinet Concerto k.622 - JOVENS SOLISTAS", compositor: "MOZART, W.A - Solista - Vitor", instrumentos: ["Flauta I", "Flauta II", "Fagote I", "Fagote II", "Horn I", "Horn II", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/xdVo0MsJMOc?si=C7r3l1fYtLv57BCB", groupId: 1 },
-            { id: 114, titulo: "06 - Concerto N 5 in A for Violin K. 219 - JOVENS SOLISTAS ", compositor: "MOZART, W.A - Solista - Gustavo", instrumentos: ["Oboé I", "Oboé II", "Horn I", "Horn II", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/piZgRq4ullw?si=EcRtGEMYPS17Mquz", groupId: 1 },
-            { id: 115, titulo: "07 - Konzert für Flöte, Streicher und Basso continuo G- dur", compositor: "QUANTZ, Johann Joachim - Solista - Eloisa 𝓟𝓪𝓿𝓪𝓷", instrumentos: ["Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/dWBEmI-xf10?si=9TNpVjRfwRO7OZVe", groupId: 1 },
-            { id: 116, titulo: "08 - Konzert in C fur Oboé und Orchester KV 314", compositor: "MOZART, W.A - Solista - Mariana", instrumentos: ["Oboé I", "Oboé II", "Trompa I", "Trompa II", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/rmCXZ8ECRdE?si=SDxBQ0NTaoPjX2HT", groupId: 1 },
+            // ================= Orquestra Sinfonica Jovem - REPERTÓRIO SOLISTAS ===========================
+            { id: 109, titulo: "01 - Sinfonia n.6 - Pastoral", compositor: "BEETHOVEN, L.V", instrumentos: ["Flauta I", "Flauta II", "Piccolo", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Fagote I", "Fagote II", "Horn I", "Horn II", "Trompete I", "Trompete II", "Trombone I", "Trombone II", "Timpani", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://open.spotify.com/playlist/5skobdx1jrICiHdzKzI12w?si=ohFdZH6cQjCz41JYTTM3sQ", groupId: 1, repertorio: "solistas" },
+            { id: 110, titulo: "02 - Concertino pour flûte, Op.107 - JOVENS SOLISTAS", compositor: "CHAMINADE, Cecile - Solista - Gabriel Pedro Waldowski Medeiros", instrumentos: ["Flauta I", "Piccolo", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Fagote I", "Fagote II", "Horn I", "Horn II", "Trompa III", "Trompa IV", "Trombone I", "Trombone II", "Trombone III", "Tuba", "Timpani", "Harpa", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/wJhV1kp3l2Y?si=b48yZLZH5Lxl66JT", groupId: 1, repertorio: "solistas" },
+            { id: 111, titulo: "03 - Cello Concerto, Op. 85 - JOVENS SOLISTAS", compositor: "ELGAR, Edward - Solista - Túlio Nakamoto Schimdt", instrumentos: ["Flauta I", "Flauta II", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Fagote I", "Fagote II", "Horn I", "Horn II", "Horn III", "Horn IV", "Trombone I", "Trombone II", "Trombone III", "Tuba", "Timpani", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/hTlWUOllZsA?si=nr7TcqbCyHaGJsCt", groupId: 1, repertorio: "solistas" },
+            { id: 112, titulo: "04 - Morceau de Concert pour Corn - JOVENS SOLISTAS", compositor: "SAINT-SAENS, Camille - Solista - Samuel Henrique Sartori Nunes", instrumentos: ["Flauta I", "Flauta II", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Fagote I", "Fagote II", "Trombone I", "Trombone II", "Trombone III", "Timpani", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/KhANlrqirK8?si=v9ZWN_oAe798w0GW", groupId: 1, repertorio: "solistas" },
+            { id: 113, titulo: "05 - Clarinet Concerto k.622 - JOVENS SOLISTAS", compositor: "MOZART, W.A - Solista - Vitor", instrumentos: ["Flauta I", "Flauta II", "Fagote I", "Fagote II", "Horn I", "Horn II", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/xdVo0MsJMOc?si=C7r3l1fYtLv57BCB", groupId: 1, repertorio: "solistas" },
+            { id: 114, titulo: "06 - Concerto N 5 in A for Violin K. 219 - JOVENS SOLISTAS ", compositor: "MOZART, W.A - Solista - Gustavo", instrumentos: ["Oboé I", "Oboé II", "Horn I", "Horn II", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/piZgRq4ullw?si=EcRtGEMYPS17Mquz", groupId: 1, repertorio: "solistas" },
+            { id: 115, titulo: "07 - Konzert für Flöte, Streicher und Basso continuo G- dur", compositor: "QUANTZ, Johann Joachim - Solista - Eloisa 𝓟𝓪𝓿𝓪𝓷", instrumentos: ["Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/dWBEmI-xf10?si=9TNpVjRfwRO7OZVe", groupId: 1, repertorio: "solistas" },
+            { id: 116, titulo: "08 - Konzert in C fur Oboé und Orchester KV 314", compositor: "MOZART, W.A - Solista - Mariana", instrumentos: ["Oboé I", "Oboé II", "Trompa I", "Trompa II", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/rmCXZ8ECRdE?si=SDxBQ0NTaoPjX2HT", groupId: 1, repertorio: "solistas" },
+
+            // ================= Orquestra Sinfonica Jovem - REPERTÓRIO SEGUNDO SEMESTRE ===========================
+            // ★★★ ATENÇÃO: SUBSTITUA ESSAS OBRAS DE EXEMPLO PELAS OBRAS REAIS DO SEGUNDO SEMESTRE ★★★
+            { id: 201, titulo: "01 - Danzon No. 2 (Segundo Semestre)", compositor: "MÁRQUEZ, Arturo", instrumentos: ["Flauta I", "Flauta II", "Piccolo", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Clarone", "Fagote I", "Fagote II", "Horn I", "Horn II", "Horn III", "Horn IV", "Trompete I", "Trompete II", "Trompete III", "Trombone I", "Trombone II", "Trombone Baixo", "Tuba", "Timpani", "Percussão", "Piano", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "", groupId: 1, repertorio: "segundo_semestre" },
+            { id: 202, titulo: "02 - Bolero de Ravél (Segundo Semestre)", compositor: "RAVEL, Maurice", instrumentos: ["Flauta I", "Flauta II", "Piccolo", "Oboé I", "Oboé II", "Corne Inglês", "Clarinete I", "Clarinete II", "Clarone", "Fagote I", "Fagote II", "Contra Fagote", "Sax Soprano", "Sax Tenor", "Horn I", "Horn II", "Horn III", "Horn IV", "Trompete I in C", "Trompete II in C", "Trompete III in C", "Trompete in D", "Trombone I", "Trombone II", "Trombone III", "Tuba", "Percussão", "Celesta", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "", groupId: 1, repertorio: "segundo_semestre" },
+            { id: 203, titulo: "03 - Sakura, Sakura (Segundo Semestre)", Arranjo de: "TAVARES, Thiago", instrumentos: ["Shakuhachi", "Koto", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "", groupId: 1, repertorio: "segundo_semestre" },
+            { id: 204, titulo: "04 - Eine Kleine Nachtmusik (Segundo Semestre)", compositor: "MOZART, W.A", instrumentos: ["Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "", groupId: 1, repertorio: "segundo_semestre" },
+            // ★★★ FIM DAS OBRAS DE EXEMPLO ★★★
             
             // ================= Banda Sinfonica =====================================
             { id: 117, titulo: "01- Dança de Vagharshabad", compositor: "VARTABED, Komitas", instrumentos: ["Todos"], audioUrl: "https://youtu.be/kzZI4LnndQs?si=MFOQ1yVWiYTdjcil", groupId: 2 },
@@ -578,6 +645,14 @@
                 selectNovo.appendChild(opt);
             });
         }
+        // ★★★ NOVO: Mostra/Oculta o seletor de repertório no Admin ★★★
+        const adminRepertorioWrapper = document.getElementById("adminRepertorioWrapper");
+        if (adminSelectedGroupId === 1) {
+            adminRepertorioWrapper.style.display = "block";
+        } else {
+            adminRepertorioWrapper.style.display = "none";
+        }
+        // ★★★ FIM ★★★
     }
 
     function renderAdminWorksList() {
@@ -586,7 +661,9 @@
         ul.innerHTML = "";
         filtered.forEach(o => {
             const li = document.createElement("li");
-            li.innerHTML = `<span><strong>${escapeHtml(o.titulo)}</strong> ${o.compositor ? `– ${escapeHtml(o.compositor)}` : ''} ${o.audioUrl ? '🎵' : ''}</span>
+            // Adiciona a tag de repertório visualmente no admin
+            const tagRepertorio = o.repertorio ? ` <span style="font-size:0.7rem; background:#3a7ca5; color:white; padding:2px 6px; border-radius:10px;">${o.repertorio}</span>` : '';
+            li.innerHTML = `<span><strong>${escapeHtml(o.titulo)}</strong> ${o.compositor ? `– ${escapeHtml(o.compositor)}` : ''} ${o.audioUrl ? '🎵' : ''} ${tagRepertorio}</span>
                             <div class="work-actions">
                                 <button class="edit-work" data-id="${o.id}">✏️ Editar</button>
                                 <button class="delete-work" data-id="${o.id}">🗑️</button>
@@ -614,6 +691,15 @@
             if (obra.instrumentos && obra.instrumentos.includes(inst)) opt.selected = true;
             selectInst.appendChild(opt);
         });
+        // ★★★ NOVO: Preenche o seletor de repertório na edição ★★★
+        const editRepertorioWrapper = document.getElementById("editRepertorioWrapper");
+        if (adminSelectedGroupId === 1) {
+            editRepertorioWrapper.style.display = "block";
+            document.getElementById("editRepertorio").value = obra.repertorio || "solistas";
+        } else {
+            editRepertorioWrapper.style.display = "none";
+        }
+        // ★★★ FIM ★★★
         document.getElementById("editWorkModal").style.display = "flex";
     }
 
@@ -627,6 +713,11 @@
         obras[idx].compositor = document.getElementById("editCompositor").value.trim() || "";
         obras[idx].audioUrl = document.getElementById("editAudio").value.trim() || "";
         obras[idx].instrumentos = instrumentosSelecionados.length ? instrumentosSelecionados : ["Todos"];
+        // ★★★ NOVO: Salva o repertório se for o grupo 1 ★★★
+        if (obras[idx].groupId === 1) {
+            obras[idx].repertorio = document.getElementById("editRepertorio").value;
+        }
+        // ★★★ FIM ★★★
         saveObras();
         renderAdminWorksList();
         if (currentGroupId === obras[idx].groupId) renderWorksByGroup(currentGroupId);
@@ -639,14 +730,20 @@
         const audio = document.getElementById("novaObraAudio").value.trim() || "";
         const selectInst = document.getElementById("novaObraInstrumentos");
         const instrumentosSelecionados = Array.from(selectInst.selectedOptions).map(opt => opt.value);
+        
+        // ★★★ NOVO: Pega o repertório selecionado no admin ★★★
+        const repertorioSelecionado = adminSelectedGroupId === 1 ? document.getElementById("novaObraRepertorio").value : undefined;
+        
         obras.push({
             id: Date.now(),
             titulo: tit,
             compositor: document.getElementById("novaObraCompositor").value.trim() || "",
             instrumentos: instrumentosSelecionados.length ? instrumentosSelecionados : ["Todos"],
             audioUrl: audio,
-            groupId: adminSelectedGroupId
+            groupId: adminSelectedGroupId,
+            repertorio: repertorioSelecionado
         });
+        // ★★★ FIM ★★★
         saveObras();
         renderAdminWorksList();
         if (currentGroupId === adminSelectedGroupId) renderWorksByGroup(currentGroupId);
@@ -667,6 +764,20 @@
             div.onclick = () => {
                 currentGroupId = g.id;
                 renderGroups();
+                
+                // ★★★ NOVO: Lógica do Seletor de Repertório ★★★
+                if (g.id === 1) {
+                    // Se for a Orquestra Jovem, mostra o seletor
+                    document.getElementById("repertoireSelectorWrapper").style.display = "flex";
+                    // Reseta para o repertório padrão (Solistas) ao entrar
+                    currentRepertoire = "solistas";
+                    document.getElementById("repertoireSelect").value = "solistas";
+                } else {
+                    // Se for outro grupo, esconde o seletor
+                    document.getElementById("repertoireSelectorWrapper").style.display = "none";
+                }
+                // ★★★ FIM DA NOVA LÓGICA ★★★
+
                 renderWorksByGroup(g.id);
                 updateGroupTitle(g.name);
                 atualizarDatalistInstrumentos(g.id);
@@ -692,7 +803,16 @@
 
     function renderWorksByGroup(gid) {
         const worksDiv = document.getElementById("worksList");
-        const filtered = obras.filter(o => o.groupId === gid);
+        
+        // ★★★ NOVO: Filtra por grupo E por repertório (se for o grupo 1) ★★★
+        let filtered = obras.filter(o => o.groupId === gid);
+        
+        if (gid === 1) {
+            // Filtra pelo repertório selecionado. Se a obra não tiver a propriedade (dados antigos), considera como "solistas".
+            filtered = filtered.filter(o => (o.repertorio || 'solistas') === currentRepertoire);
+        }
+        // ★★★ FIM DO NOVO FILTRO ★★★
+
         const emptyMsg = worksDiv.querySelector(".empty-works");
         if (emptyMsg) emptyMsg.remove();
 
@@ -856,7 +976,10 @@
         const endpoint = grupoAtual.endpoint || FORMSPREE_ENDPOINT; // fallback se não definido
 
         const obrasTexto = obrasSelecionadas.map(o => `- ${o.titulo}${o.compositor ? ` (${o.compositor})` : ''}`).join("\n");
-        const corpo = `Músico: ${nome}\nE-mail: ${email}\nInstrumento: ${instrumento}\nGrupo: ${nomeGrupo}\n\nObras solicitadas (${checkboxes.length}):\n${obrasTexto}\n\nObservações: ${obs || "Nenhuma"}`;
+        // ★★★ NOVO: Inclui o repertório no e-mail se for a Orquestra Jovem ★★★
+        const infoRepertorio = (currentGroupId === 1) ? `Repertório: ${currentRepertoire === 'solistas' ? 'Jovens Solistas' : 'Segundo Semestre'}\n` : '';
+        const corpo = `Músico: ${nome}\nE-mail: ${email}\nInstrumento: ${instrumento}\nGrupo: ${nomeGrupo}\n${infoRepertorio}\nObras solicitadas (${checkboxes.length}):\n${obrasTexto}\n\nObservações: ${obs || "Nenhuma"}`;
+        // ★★★ FIM ★★★
 
         enviando = true;
         const btn = document.getElementById("enviarPedidoBtn");
@@ -869,6 +992,7 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     nome, email, instrumento, grupo: nomeGrupo,
+                    repertorio: (currentGroupId === 1) ? (currentRepertoire === 'solistas' ? 'Jovens Solistas' : 'Segundo Semestre') : 'N/A',
                     obras: obrasTexto,
                     observacoes: obs,
                     _subject: `Pedido de Estudo - ${nome} - ${nomeGrupo}`
@@ -942,6 +1066,13 @@
             const instrumento = this.value.trim().toLowerCase();
             aplicarFiltroInstrumento(instrumento);
         });
+
+        // ★★★ NOVO: Event listener para o seletor de repertório ★★★
+        document.getElementById("repertoireSelect").addEventListener("change", function() {
+            currentRepertoire = this.value;
+            renderWorksByGroup(currentGroupId);
+        });
+        // ★★★ FIM DO EVENT LISTENER ★★★
 
         document.getElementById("enviarPedidoBtn").onclick = enviarPedido;
         document.getElementById("adminToggleBtn").onclick = () => { if (isAdmin) document.getElementById("adminModal").style.display = "flex"; else alert("Acesso restrito."); };
