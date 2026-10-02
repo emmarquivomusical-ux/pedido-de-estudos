@@ -358,8 +358,9 @@
 
 <script>
     // ================= VERSÃO DO APP ==========================================================
-    const VERSAO_APP = "2.0.0";
-    const VERSAO_OBRAS = "2.0.0";
+    // ★★★ ATENÇÃO: SUBSTITUA A NOVA VERSÃO ★★★
+    const VERSAO_APP = "2.0.1";
+    const VERSAO_OBRAS = "2.0.1";
 
     // ================= FUNÇÃO PARA CONVERTER LINKS DE ÁUDIO =================
     function obterEmbedAudio(url) {
@@ -549,7 +550,7 @@
         if (groupId === 0) {
             return [
                 { value: 'regular', label: 'Repertório Regular' },
-                { value: 'novo', label: 'Novo Repertório' }
+                { value: 'novo', label: 'Sítio do Pica-Pau Amarelo' }
             ];
         } else if (groupId === 1) {
             return [
@@ -565,6 +566,7 @@
     function getDefaultObras() {
         return [
              // ================= Orquestra Sinfônica Infanto Juvenil - REPERTÓRIO REGULAR =================
+            // ★★★ ATENÇÃO: SUBSTITUA ESSAS OBRAS DE EXEMPLO PELAS OBRAS REAIS DO NOVO REPERTÓRIO ★★★
             { id: 101, titulo: "01 - Material Didático (aquecimento)", compositor: "MCALLISTER, John", instrumentos: ["Todos"], audioUrl: "", groupId: 0, repertorio: "regular" },
             { id: 102, titulo: "02 - Konzert in A-Moll ...", compositor: "BACH, J. S", instrumentos: ["Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://open.spotify.com/playlist/3rV7BGkHFJklO9Syp5ndvJ?si=KvJwPO6ZRH--R4k98rr5VQ", groupId: 0, repertorio: "regular" },
             { id: 103, titulo: "03 - Flute Concerto K. 315", compositor: "MOZART, W. A", instrumentos: ["Flauta", "Oboé I", "Oboé II", "Horn I", "Horn II", "Corn I", "Corn II", "Trompete I", "Trompete II", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/-vB3YZSAKzg?si=_yqpCwh60IzZJnVh", groupId: 0, repertorio: "regular" },
@@ -583,9 +585,8 @@
             { id: 305, titulo: "05 - Tia Nastácia (Sítio do Pica-pau amarelo)", compositor: "Dorival Caymmi", instrumentos: ["Flauta I", "Flauta II", "Piccolo", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Fagote I", "Fagote II", "Horn I", "Horn II", "Horn III", "Horn IV", "Trompete I", "Trompete II", "Trompete III", "Trombone I", "Trombone II", "Euphonium", "Tuba", "Timpani", "Percussão", "Drum Kit", "Harpa", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "", groupId: 0, repertorio: "novo" },
             { id: 306, titulo: "03 - Saci (Sítio do Pica-pau amarelo)", compositor: "Guto Graça Mello", instrumentos: ["Flauta I", "Flauta II", "Piccolo", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Fagote I", "Fagote II", "Horn I", "Horn II", "Horn III", "Horn IV", "Trompete I", "Trompete II", "Trompete III", "Trombone I", "Trombone II", "Tuba", "Timpani", "Xilofone", "Bombo", "Suspended Cymbal", "Pratos", "Claves", "Harpa", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "", groupId: 0, repertorio: "novo" },
             
-            // ★★★ FIM DAS OBRAS DE EXEMPLO ★★★
-
-            // ================= Orquestra Sinfonica Jovem - REPERTÓRIO SOLISTAS ===========================
+            // ================= Orquestra Sinfônica Jovem - REPERTÓRIO SOLISTAS ===========================
+            // ★★★ ATENÇÃO: SUBSTITUA ESSAS OBRAS DE EXEMPLO PELAS OBRAS REAIS DO NOVO REPERTÓRIO ★★★
             { id: 109, titulo: "01 - Sinfonia n.6 - Pastoral", compositor: "BEETHOVEN, L.V", instrumentos: ["Flauta I", "Flauta II", "Piccolo", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Fagote I", "Fagote II", "Horn I", "Horn II", "Trompete I", "Trompete II", "Trombone I", "Trombone II", "Timpani", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://open.spotify.com/playlist/5skobdx1jrICiHdzKzI12w?si=ohFdZH6cQjCz41JYTTM3sQ", groupId: 1, repertorio: "solistas" },
             { id: 110, titulo: "02 - Concertino pour flûte, Op.107 - JOVENS SOLISTAS", compositor: "CHAMINADE, Cecile - Solista - Gabriel Pedro Waldowski Medeiros", instrumentos: ["Flauta I", "Piccolo", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Fagote I", "Fagote II", "Horn I", "Horn II", "Trompa III", "Trompa IV", "Trombone I", "Trombone II", "Trombone III", "Tuba", "Timpani", "Harpa", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/wJhV1kp3l2Y?si=b48yZLZH5Lxl66JT", groupId: 1, repertorio: "solistas" },
             { id: 111, titulo: "03 - Cello Concerto, Op. 85 - JOVENS SOLISTAS", compositor: "ELGAR, Edward - Solista - Túlio Nakamoto Schimdt", instrumentos: ["Flauta I", "Flauta II", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Fagote I", "Fagote II", "Horn I", "Horn II", "Horn III", "Horn IV", "Trombone I", "Trombone II", "Trombone III", "Tuba", "Timpani", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/hTlWUOllZsA?si=nr7TcqbCyHaGJsCt", groupId: 1, repertorio: "solistas" },
@@ -595,14 +596,16 @@
             { id: 115, titulo: "07 - Konzert für Flöte, Streicher und Basso continuo G- dur", compositor: "QUANTZ, Johann Joachim - Solista - Eloisa 𝓟𝓪𝓿𝓪𝓷", instrumentos: ["Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/dWBEmI-xf10?si=9TNpVjRfwRO7OZVe", groupId: 1, repertorio: "solistas" },
             { id: 116, titulo: "08 - Konzert in C fur Oboé und Orchester KV 314", compositor: "MOZART, W.A - Solista - Mariana", instrumentos: ["Oboé I", "Oboé II", "Trompa I", "Trompa II", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/rmCXZ8ECRdE?si=SDxBQ0NTaoPjX2HT", groupId: 1, repertorio: "solistas" },
 
-            // ================= Orquestra Sinfonica Jovem - REPERTÓRIO OLGA KOSS ===========================
+            // ================= Orquestra Sinfônica Jovem - REPERTÓRIO OLGA KOSS ===========================
+            // ★★★ ATENÇÃO: SUBSTITUA ESSAS OBRAS DE EXEMPLO PELAS OBRAS REAIS DO NOVO REPERTÓRIO ★★★
             { id: 201, titulo: "01 - Danzon No. 2", compositor: "MÁRQUEZ, Arturo", instrumentos: ["Flauta I", "Flauta II", "Piccolo", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Clarone", "Fagote I", "Fagote II", "Horn I", "Horn II", "Horn III", "Horn IV", "Trompete I", "Trompete II", "Trompete III", "Trombone I", "Trombone II", "Trombone Baixo", "Tuba", "Timpani", "Percussão", "Piano", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "", groupId: 1, repertorio: "segundo_semestre" },
             { id: 202, titulo: "02 - Bolero de Ravél", compositor: "RAVEL, Maurice", instrumentos: ["Flauta I", "Flauta II", "Piccolo", "Oboé I", "Oboé II", "Corne Inglês", "Clarinete I", "Clarinete II", "Clarone", "Fagote I", "Fagote II", "Contra Fagote", "Sax Soprano", "Sax Tenor", "Horn I", "Horn II", "Horn III", "Horn IV", "Trompete I in C", "Trompete II in C", "Trompete III in C", "Trompete in D", "Trombone I", "Trombone II", "Trombone III", "Tuba", "Percussão", "Celesta", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "", groupId: 1, repertorio: "segundo_semestre" },
             { id: 203, titulo: "03 - Sakura, Sakura", compositor: "TAVARES, Thiago", instrumentos: ["Shakuhachi", "Koto", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "", groupId: 1, repertorio: "segundo_semestre" },
             { id: 204, titulo: "04 - Eine Kleine Nachtmusik", compositor: "MOZART, W.A", instrumentos: ["Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "", groupId: 1, repertorio: "segundo_semestre" },
             { id: 205, titulo: "05 - O Trenzinho do Caipira", compositor: "Villa-Lobos, Heitor", instrumentos: ["Flauta", "Piccolo", "Oboé", "Clarinete", "Sax Baritono", "Fagote", "Horn I", "Horn II", "Trombone", "Timpani", "Percussão", "Piano", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "", groupId: 1, repertorio: "segundo_semestre" },
             
-            // ================= Banda Sinfonica =====================================
+            // ================= Banda Sinfônica =====================================
+            // ★★★ ATENÇÃO: SUBSTITUA ESSAS OBRAS DE EXEMPLO PELAS OBRAS REAIS DO NOVO REPERTÓRIO ★★★
             { id: 117, titulo: "01- Dança de Vagharshabad", compositor: "VARTABED, Komitas", instrumentos: ["Todos"], audioUrl: "https://youtu.be/kzZI4LnndQs?si=MFOQ1yVWiYTdjcil", groupId: 2 },
             { id: 118, titulo: "02 - Sobre Excertos de Hilda Hilst", compositor: "SANTOS, Pedro R. dos", instrumentos: ["Todos"], audioUrl: "não localizado", groupId: 2 },
             { id: 119, titulo: "03 - Os Xapiri", compositor: "SANTOS, Gilson", instrumentos: ["Todos"], audioUrl: "https://youtu.be/5cvK8Hw2dyw?si=dmKzwVLYA-M9E4mB", groupId: 2 },
