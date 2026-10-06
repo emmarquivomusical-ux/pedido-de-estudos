@@ -360,8 +360,8 @@
 <script>
     // ================= VERSÃO DO APP ==========================================================
     // ★★★ ATENÇÃO: SUBSTITUA A NOVA VERSÃO ★★★
-    const VERSAO_APP = "2.0.7";
-    const VERSAO_OBRAS = "2.0.7";
+    const VERSAO_APP = "2.0.8";
+    const VERSAO_OBRAS = "2.0.8";
 
     // ================= FUNÇÃO PARA CONVERTER LINKS DE ÁUDIO =================
     function obterEmbedAudio(url) {
@@ -558,6 +558,10 @@
       // ★★★   { value: 'solistas', label: 'Repertório - Jovens Solistas' },★★★
                 { value: 'segundo_semestre', label: 'Repertório - Olga Koss' }
             ];
+            else if (groupId === 1) {
+            return [
+      // ★★★   { value: 'solistas', label: 'Repertório - Jovens Solistas' },★★★
+                { value: 'segundo_semestre', label: 'Repertório - Segundo Semestre' }
         }
         return [];
     }
