@@ -166,6 +166,67 @@
             min-width: 200px;
         }
 
+        /* ★★★ NOVO CÓDIGO: ESTILOS DA ESCOLA (CURSOS E EDITAIS) ★★★ */
+        .school-info-card {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e2edf2;
+        }
+        .school-info-card h3 { color: #0e4b62; margin-bottom: 1rem; font-size: 1.2rem;}
+        
+        details {
+            background: #fff;
+            padding: 1rem;
+            border-radius: 1rem;
+            border: 1px solid #ffe3b5;
+            cursor: pointer;
+            margin-bottom: 0.8rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        summary {
+            font-weight: bold;
+            color: #145c74;
+            font-size: 1.1rem;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        summary::after {
+            content: "▼";
+            font-size: 0.8rem;
+            color: #1a6f8f;
+            transition: transform 0.3s;
+        }
+        details[open] summary::after {
+            transform: rotate(180deg);
+        }
+        .details-content {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f1f5f9;
+            color: #2c3e2b;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            font-weight: normal;
+        }
+
+        .link-button {
+            display: inline-block;
+            background: #1a6f8f;
+            padding: 0.8rem 1.2rem;
+            border-radius: 1rem;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            margin-right: 0.5rem;
+            transition: background 0.2s;
+        }
+        .link-button:hover { background: #0e4b62; }
+
         @media (max-width: 600px) {
             .form-fixed { flex-direction: column; align-items: stretch; }
             .work-item { flex-direction: column; align-items: stretch; }
@@ -205,10 +266,11 @@
 
     <div class="groups-container" id="groupsContainer"></div>
 
-    <div class="repertory-section">
+    <!-- ★★★ SEÇÃO DE PEDIDOS (GRUPOS) ★★★ -->
+    <div class="repertory-section" id="repertorySection">
         <div class="section-title" id="currentGroupTitle">Repertório em Ensaio</div>
 
-        <!-- ★★★ NOVO: SELETOR DE REPERTÓRIO (Aparece apenas na Orquestra Jovem) ★★★ -->
+        <!-- ★★★ SELETOR DE REPERTÓRIO (Aparece apenas na Orquestra Jovem) ★★★ -->
         <div id="repertoireSelectorWrapper" class="repertoire-selector-wrapper" style="display: none;">
             <label for="repertoireSelect">📚 Selecione o Repertório:</label>
             <select id="repertoireSelect">
@@ -248,6 +310,43 @@
 
         <div id="worksList" class="works-grid"></div>
     </div>
+
+    <!-- ★★★ NOVO: SEÇÃO DA ESCOLA (CURSOS E EDITAIS) ★★★ -->
+    <div class="repertory-section" id="schoolSection" style="display: none; padding: 2rem;">
+        <div class="section-title" style="border-left-color: #1a6f8f;">🏫 Escola Municipal de Música SP</div>
+        
+        <div class="school-info-card">
+            <h3>📚 Cursos e Informações</h3>
+            <details>
+                <summary>Lista de Cursos</summary>
+                <div class="details-content">
+                    <p>Aqui você pode colocar a lista detalhada de cursos oferecidos pela escola (ex: Iniciação Musical, Teoria Musical, Instrumentos, Canto, etc).</p>
+                </div>
+            </details>
+            <details>
+                <summary>Horários e Turmas</summary>
+                <div class="details-content">
+                    <p>Informações sobre horários de funcionamento, dias de aula e grade de horários.</p>
+                </div>
+            </details>
+            <details>
+                <summary>Sobre a Escola</summary>
+                <div class="details-content">
+                    <p>Breve histórico e informações de contato da Escola Municipal de Música.</p>
+                </div>
+            </details>
+        </div>
+
+        <div class="school-info-card">
+            <h3>📄 Editais e Documentos</h3>
+            <p style="margin-bottom: 1rem; color: #555;">Clique nos botões abaixo para acessar os editais e documentos importantes.</p>
+            <!-- ATENÇÃO: SUBSTITUA O "#" PELO LINK REAL DO PDF/DOCUMENTO -->
+            <a href="#" class="link-button" target="_blank">📄 Edital 01/2026 - Matrículas</a>
+            <a href="#" class="link-button" target="_blank">📄 Regulamento Interno</a>
+            <a href="#" class="link-button" target="_blank">📄 Calendário Escolar</a>
+        </div>
+    </div>
+
 </div>
 
 <button class="admin-toggle" id="adminToggleBtn" style="display: none;">🔧 Admin</button>
@@ -267,7 +366,7 @@
                 <label>Instrumentos que tocam nesta obra:</label>
                 <select id="novaObraInstrumentos" multiple></select>
                 
-                <!-- ★★★ NOVO: SELETOR DE REPERTÓRIO NO ADMIN ★★★ -->
+                <!-- ★★★ SELETOR DE REPERTÓRIO NO ADMIN ★★★ -->
                 <div id="adminRepertorioWrapper" style="display:none; margin-top: 0.5rem;">
                     <label>Repertório:</label>
                     <select id="novaObraRepertorio">
@@ -338,14 +437,14 @@
         <label>URL do Áudio (MP3, Spotify, YouTube, SoundCloud):</label><input type="text" id="editAudio" placeholder="https://...">
         <label>Instrumentos que tocam nesta obra:</label>
         <select id="editInstrumentos" multiple></select>
-        <!-- ★★★ NOVO: SELETOR DE REPERTÓRIO NA EDIÇÃO ★★★ -->
+        
         <div id="editRepertorioWrapper" style="display:none; margin-top: 0.5rem;">
             <label>Repertório:</label>
             <select id="editRepertorio">
                 <!-- Opções preenchidas via JS -->
             </select>
         </div>
-        <!-- ★★★ FIM DO SELETOR ★★★ -->
+        
         <button id="confirmEditBtn">Salvar</button>
         <button id="cancelEditBtn">Cancelar</button>
     </div>
@@ -359,9 +458,8 @@
 
 <script>
     // ================= VERSÃO DO APP ==========================================================
-    // ★★★ ATENÇÃO: SUBSTITUA A NOVA VERSÃO ★★★
-    const VERSAO_APP = "2.1.4";
-    const VERSAO_OBRAS = "2.1.4";
+    const VERSAO_APP = "2.2.0";
+    const VERSAO_OBRAS = "2.2.0";
 
     // ================= FUNÇÃO PARA CONVERTER LINKS DE ÁUDIO =================
     function obterEmbedAudio(url) {
@@ -416,10 +514,12 @@
     const ADMIN_SECRET_KEY = "admin2025";
 
     // ================= GRUPOS COM ENDPOINTS ESPECÍFICOS =================
+    // ★★★ NOVO: Adicionado o ID 3 para a Escola Municipal de Música ★★★
     const GROUPS = [
         { id: 0, name: "Orquestra Sinfônica Infanto Juvenil", endpoint: "https://formspree.io/f/xrevzvkk" },
         { id: 1, name: "Orquestra Sinfônica Jovem", endpoint: "https://formspree.io/f/mzepldaz" },
-        { id: 2, name: "Banda Sinfônica", endpoint: "https://formspree.io/f/xbgrvgqo" }
+        { id: 2, name: "Banda Sinfônica", endpoint: "https://formspree.io/f/xbgrvgqo" },
+        { id: 3, name: "Escola Municipal de Música", endpoint: "" }
     ];
 
     const INSTRUMENTOS_POR_GRUPO = {
@@ -433,7 +533,7 @@
     let adminSelectedGroupId = 0;
     let editingWorkId = null;
     let isAdmin = false;
-    let currentRepertoire = 'regular'; // ★★★ NOVO: Controla o repertório ativo ★★★
+    let currentRepertoire = 'regular';
 
     // Histórico de pedidos
     let historicoPedidos = {};
@@ -550,25 +650,21 @@
     function getRepertoireOptions(groupId) {
         if (groupId === 0) {
             return [
-      // ★★★  { value: 'regular', label: 'Repertório - Jovens Solistas' },★★★
                 { value: 'novo', label: 'Repertório - Sítio do Pica-Pau Amarelo' }
             ];
         } else if (groupId === 1) {
             return [
-      // ★★★   { value: 'solistas', label: 'Repertório - Jovens Solistas' },★★★
                 { value: 'segundo_semestre', label: 'Repertório - Olga Koss' }
             ];
         }
         return [];
     }
-
     // ★★★ FIM DA NOVA FUNÇÃO ★★★
 
     // ----- Dados padrão (COM INSTRUMENTOS) -----
     function getDefaultObras() {
         return [
             // ================= Orquestra Sinfônica Infanto Juvenil - REPERTÓRIO "SÍTIO DO PICA-PAU AMARELO" ===========================
-            // ★★★ ATENÇÃO: SUBSTITUA ESSAS OBRAS DE EXEMPLO PELAS OBRAS REAIS DO NOVO REPERTÓRIO ★★★
             { id: 301, titulo: "01 - Abertura Sítio (Sítio do Pica-pau amarelo)", compositor: "Gilberto Gil", instrumentos: ["Flauta I", "Flauta II", "Piccolo", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Fagote I", "Fagote II", "Trompa I", "Trompa II", "Trompa III", "Trompa IV", "Trompete I", "Trompete II", "Trompete III", "Trombone I", "Trombone II", "Euphonium", "Tuba", "Timpani", "Percussão", "Harpa", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/i9RbBcDTRAI?si=FcVLCYIw9GaU68zt", groupId: 0, repertorio: "novo" },
             { id: 302, titulo: "02 - Pedrinho e Narizinho (Sítio do Pica-pau amarelo)", compositor: "Dori Caymmi e Pailo C. Pinheiro / Ivan Lins e  Vitor Martins", instrumentos: ["Flauta I", "Flauta II", "Piccolo", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Fagote I", "Fagote II", "Trompa I", "Trompa II", "Trompa III", "Trompa IV", "Trompete I", "Trompete II", "Trompete III", "Trombone I", "Trombone II", "Euphonium", "Tuba", "Timpani", "Percussão", "Glockenspiel", "Xilofone", "Harpa", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/Q_r1KIF_Fa4?si=8o1MOd7kHDXyJMUK", groupId: 0, repertorio: "novo" },
             { id: 303, titulo: "03 - Dona Benta (Sítio do Pica-pau amarelo)", compositor: "Ivan Lins e Vitor Martins", instrumentos: ["Flauta I", "Flauta II", "Piccolo", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Fagote I", "Fagote II", "Trompa I", "Trompa II", "Trompa III", "Trompa IV", "Trompete I", "Trompete II", "Trompete III", "Trombone I", "Trombone II", "Euphonium", "Tuba", "Timpani", "Percussão", "Glockenspiel", "Xilofone", "Harpa", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/_p0HcG9PONs?si=0UyRgJK2cZ_p6NAH", groupId: 0, repertorio: "novo" },
@@ -578,7 +674,6 @@
             { id: 307, titulo: "07 - Aquarela", compositor: "Toquinho", instrumentos: ["Flauta I", "Flauta II", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Fagote I", "Fagote II", "Trompa I", "Trompa II", "Trompete I", "Trompete II", "Trompete III", "Trombone I", "Trombone II", "Tuba", "Timpani", "Prato Suspenso", "Triângolo", "Chocalho ovo", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/pJPwSn0Odo0?si=J2k9BO1BoeiI2Zr1", groupId: 0, repertorio: "novo" },
             
             // ================= Orquestra Sinfônica Jovem - REPERTÓRIO "OLGA KOSS" ===========================
-            // ★★★ ATENÇÃO: SUBSTITUA ESSAS OBRAS DE EXEMPLO PELAS OBRAS REAIS DO NOVO REPERTÓRIO ★★★
             { id: 201, titulo: "01 - Danzon No. 2", compositor: "MÁRQUEZ, Arturo", instrumentos: ["Flauta I", "Flauta II", "Piccolo", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Clarone", "Fagote I", "Fagote II", "Trompa I", "Trompa II", "Trompa III", "Trompa IV", "Trompete I", "Trompete II", "Trompete III", "Trombone I", "Trombone II", "Trombone III", "Trombone Baixo", "Tuba", "Timpani", "Percussão", "Piano", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/_1ynC1RB3kY?si=PxGpCDLQJJ80IbEV", groupId: 1, repertorio: "segundo_semestre" },
             { id: 202, titulo: "02 - Bolero de Ravél", compositor: "RAVEL, Maurice", instrumentos: ["Flauta I", "Flauta II", "Piccolo", "Oboé I", "Oboé II", "Corne Inglês", "Clarinete I", "Clarinete II", "Clarone", "Fagote I", "Fagote II", "Contra Fagote", "Sax Soprano", "Sax Tenor", "Trompa I", "Trompa II", "Trompa III", "Trompa IV", "Trompete I", "Trompete II", "Trompete III", "Trombone I", "Trombone II", "Trombone III", "Tuba", "Percussão", "Celesta", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/8KsXPq3nedY?si=sUbRRpQfkX1dEcZD", groupId: 1, repertorio: "segundo_semestre" },
             { id: 203, titulo: "03 - Sakura, Sakura", compositor: "TAVARES, Thiago", instrumentos: ["Flauta I", "Flauta II", "Oboé I", "Oboé II", "Clarinete I", "Clarinete II", "Fagote I", "Fagote II", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/F6TlQyq9Fcg?si=CK0VDQCB3fbGyr9D", groupId: 1, repertorio: "segundo_semestre" },
@@ -590,11 +685,6 @@
             { id: 209, titulo: "09 - Aquarela do Brasil", compositor: "Ary Barroso", instrumentos: ["Flauta", "Oboé", "Clarinete", "Fagote", "Trompa I", "Trompa II", "Trompete", "Trombone", "Tuba", "Timpani", "Percussão", "Harpa I", "Harpa II", "Piano", "Violino I", "Violino II", "Viola", "Violoncelo", "Contrabaixo"], audioUrl: "https://youtu.be/cRzPz5QgFnc?si=0bixsrAkfp2oJxI-", groupId: 1, repertorio: "segundo_semestre" },
  
             // ================= Banda Sinfônica =====================================
- 
-            // ================= Banda Sinfônica =====================================
-            
-            // ================= Banda Sinfônica =====================================
-            // ★★★ ATENÇÃO: SUBSTITUA ESSAS OBRAS DE EXEMPLO PELAS OBRAS REAIS DO NOVO REPERTÓRIO ★★★
             { id: 117, titulo: "01- Dança de Vagharshabad", compositor: "VARTABED, Komitas", instrumentos: ["Todos"], audioUrl: "https://youtu.be/kzZI4LnndQs?si=MFOQ1yVWiYTdjcil", groupId: 2 },
             { id: 118, titulo: "02 - Sobre Excertos de Hilda Hilst", compositor: "SANTOS, Pedro R. dos", instrumentos: ["Todos"], audioUrl: "não localizado", groupId: 2 },
             { id: 119, titulo: "03 - Os Xapiri", compositor: "SANTOS, Gilson", instrumentos: ["Todos"], audioUrl: "https://youtu.be/5cvK8Hw2dyw?si=dmKzwVLYA-M9E4mB", groupId: 2 },
@@ -608,7 +698,6 @@
         
         ];
     }
-
 
     function loadData() {
         const stored = localStorage.getItem("musical_obras");
@@ -645,6 +734,9 @@
         const cont = document.getElementById("adminGroupSelector");
         cont.innerHTML = "";
         GROUPS.forEach(g => {
+            // ★★★ NOVO: Ignora o grupo 3 (Escola) no admin, pois não tem obras ★★★
+            if (g.id === 3) return; 
+            
             const btn = document.createElement("button");
             btn.innerText = g.name;
             btn.className = `admin-btn ${adminSelectedGroupId === g.id ? 'active' : ''}`;
@@ -794,30 +886,41 @@
                 currentGroupId = g.id;
                 renderGroups();
                 
-                // ★★★ NOVO: Lógica do Seletor de Repertório para Grupo 0 e 1 ★★★
-                const repSelect = document.getElementById("repertoireSelect");
-                if (g.id === 0 || g.id === 1) {
-                    document.getElementById("repertoireSelectorWrapper").style.display = "flex";
-                    repSelect.innerHTML = "";
-                    const options = getRepertoireOptions(g.id);
-                    options.forEach(opt => {
-                        repSelect.innerHTML += `<option value="${opt.value}">${opt.label}</option>`;
-                    });
-                    // Define o repertório padrão ao entrar
-                    currentRepertoire = options[0].value;
-                    repSelect.value = currentRepertoire;
-                } else {
-                    document.getElementById("repertoireSelectorWrapper").style.display = "none";
-                }
-                // ★★★ FIM DA NOVA LÓGICA ★★★
+                // ★★★ NOVO: Lógica para exibir a Seção da Escola ou a Seção de Pedidos ★★★
+                const repertorySection = document.getElementById("repertorySection");
+                const schoolSection = document.getElementById("schoolSection");
 
-                renderWorksByGroup(g.id);
-                updateGroupTitle(g.name);
-                atualizarDatalistInstrumentos(g.id);
-                document.getElementById("musicoInstrumento").value = "";
-                const emptyMsg = document.querySelector(".empty-works");
-                if (emptyMsg) emptyMsg.remove();
-                mostrarTodasObras();
+                if (g.id === 3) {
+                    // Se for a Escola, esconde pedidos e mostra a escola
+                    repertorySection.style.display = "none";
+                    schoolSection.style.display = "block";
+                } else {
+                    // Se for grupo normal, mostra pedidos e esconde a escola
+                    repertorySection.style.display = "block";
+                    schoolSection.style.display = "none";
+
+                    const repSelect = document.getElementById("repertoireSelect");
+                    if (g.id === 0 || g.id === 1) {
+                        document.getElementById("repertoireSelectorWrapper").style.display = "flex";
+                        repSelect.innerHTML = "";
+                        const options = getRepertoireOptions(g.id);
+                        options.forEach(opt => {
+                            repSelect.innerHTML += `<option value="${opt.value}">${opt.label}</option>`;
+                        });
+                        // Define o repertório padrão ao entrar
+                        currentRepertoire = options[0].value;
+                        repSelect.value = currentRepertoire;
+                    } else {
+                        document.getElementById("repertoireSelectorWrapper").style.display = "none";
+                    }
+                    renderWorksByGroup(g.id);
+                    updateGroupTitle(g.name);
+                    atualizarDatalistInstrumentos(g.id);
+                    document.getElementById("musicoInstrumento").value = "";
+                    const emptyMsg = document.querySelector(".empty-works");
+                    if (emptyMsg) emptyMsg.remove();
+                    mostrarTodasObras();
+                }
             };
             container.appendChild(div);
         });
